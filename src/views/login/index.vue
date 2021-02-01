@@ -57,8 +57,8 @@
           <span>Password : any</span>
         </div>
 
-        <el-button class="thirdparty-button" type="primary" @click="showDialog=true">
-          Or connect with
+        <el-button class="thirdparty-button" type="primary" @click="googleHandleClick()">
+          Google
         </el-button>
       </div>
     </el-form>
@@ -74,6 +74,8 @@
 </template>
 
 <script>
+import firebase from 'firebase'
+import { mapMutations } from 'vuex'
 import { validUsername } from '@/utils/validate'
 import SocialSign from './components/SocialSignin'
 
@@ -138,6 +140,9 @@ export default {
     // window.removeEventListener('storage', this.afterQRScan)
   },
   methods: {
+    ...mapMutations([
+      'SET_TOKEN'
+    ]),
     checkCapslock(e) {
       const { key } = e
       this.capsTooltip = key && key.length === 1 && (key >= 'A' && key <= 'Z')
@@ -168,6 +173,24 @@ export default {
           console.log('error submit!!')
           return false
         }
+      })
+    },
+    googleHandleClick() {
+      const provider = new firebase.auth.GoogleAuthProvider()
+      firebase.auth().signInWithPopup(provider).then(result => {
+        const token = result.credential?.accessToken
+        // const user = result.user
+        this.loading = true
+        this.$store.dispatch('user/googleLogin', token)
+          .then(() => {
+            this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
+            this.loading = false
+          })
+          .catch(() => {
+            this.loading = false
+          })
+      }).catch(err => {
+        console.warn(err)
       })
     },
     getOtherQuery(query) {

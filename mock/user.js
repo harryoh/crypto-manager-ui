@@ -20,6 +20,12 @@ const users = {
     introduction: 'I am an editor',
     avatar: 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
     name: 'Normal Editor'
+  },
+  'default': {
+    roles: ['admin'],
+    introduction: 'I am an Testing',
+    avatar: 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
+    name: 'Normal Editor'
   }
 }
 
@@ -58,9 +64,13 @@ module.exports = [
       // mock error
       if (!info) {
         return {
-          code: 50008,
-          message: 'Login failed, unable to get user details.'
+          code: 20000,
+          data: users.default
         }
+        // return {
+        //   code: 50008,
+        //   message: 'Login failed, unable to get user details.'
+        // }
       }
 
       return {

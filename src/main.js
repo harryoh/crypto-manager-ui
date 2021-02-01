@@ -6,7 +6,9 @@ import 'normalize.css/normalize.css' // a modern alternative to CSS resets
 
 import Element from 'element-ui'
 import './styles/element-variables.scss'
-import enLang from 'element-ui/lib/locale/lang/en'// 如果使用中文语言包请默认支持，无需额外引入，请删除该依赖
+import koLang from 'element-ui/lib/locale/lang/ko'
+
+import firebase from 'firebase'
 
 import '@/styles/index.scss' // global css
 
@@ -35,7 +37,7 @@ if (process.env.NODE_ENV === 'production') {
 
 Vue.use(Element, {
   size: Cookies.get('size') || 'medium', // set element-ui default size
-  locale: enLang // 如果使用中文，无需设置，请删除
+  locale: koLang
 })
 
 // register global utility filters
@@ -44,6 +46,20 @@ Object.keys(filters).forEach(key => {
 })
 
 Vue.config.productionTip = false
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: 'AIzaSyAMmnsoQKZblhpF3hAu5Fk_fJQlDNH5CXM',
+  authDomain: 'crypto-manager-ff78a.firebaseapp.com',
+  projectId: 'crypto-manager-ff78a',
+  storageBucket: 'crypto-manager-ff78a.appspot.com',
+  messagingSenderId: '171156851462',
+  appId: '1:171156851462:web:a1a2a7fdbb44787a4e2c87',
+  measurementId: 'G-J6NQC1M21S'
+}
+
+firebase.initializeApp(firebaseConfig)
+firebase.analytics()
 
 new Vue({
   el: '#app',

@@ -1,6 +1,7 @@
 import { login, logout, getInfo } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import router, { resetRouter } from '@/router'
+import firebase from 'firebase'
 
 const state = {
   token: getToken(),
@@ -44,6 +45,18 @@ const actions = {
     })
   },
 
+  // google login
+  googleLogin({ commit }, token) {
+    return new Promise((resolve, reject) => {
+      if (!token) {
+        reject()
+      }
+      commit('SET_TOKEN', token)
+      setToken(token)
+      resolve()
+    })
+  },
+
   // get user info
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
@@ -76,6 +89,10 @@ const actions = {
   logout({ commit, state, dispatch }) {
     return new Promise((resolve, reject) => {
       logout(state.token).then(() => {
+        if (firebase.auth()?.currentUser) {
+          firebase.auth().signOut()
+        }
+
         commit('SET_TOKEN', '')
         commit('SET_ROLES', [])
         removeToken()
