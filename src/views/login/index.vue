@@ -41,11 +41,6 @@ export default {
       }
     })
   },
-  mounted() {
-  },
-  destroyed() {
-    // window.removeEventListener('storage', this.afterQRScan)
-  },
   methods: {
     handleLogin() {
       const provider = new firebase.auth.GoogleAuthProvider()
