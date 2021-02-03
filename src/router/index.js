@@ -84,6 +84,39 @@ export const constantRoutes = [
     ]
   },
   {
+    path: '/premium',
+    component: Layout,
+    redirect: '/premium/monitor',
+    alwaysShow: true,
+    name: 'Premium',
+    meta: {
+      title: 'Premium',
+      icon: 'international',
+      roles: ['admin', 'editor']
+    },
+    children: [
+      {
+        path: 'monitor',
+        component: () => import('@/views/premium/monitor'),
+        name: 'PremiumMonitor',
+        meta: {
+          title: 'Premium Monitor',
+          affix: true,
+          roles: ['admin', 'editor']
+        }
+      },
+      {
+        path: 'rules',
+        component: () => import('@/views/premium/rules'),
+        name: 'PremiumRules',
+        meta: {
+          title: 'Rules',
+          roles: ['admin']
+        }
+      }
+    ]
+  },
+  {
     path: '/documentation',
     component: Layout,
     children: [
@@ -91,7 +124,7 @@ export const constantRoutes = [
         path: 'index',
         component: () => import('@/views/documentation/index'),
         name: 'Documentation',
-        meta: { title: 'Documentation', icon: 'documentation', affix: true }
+        meta: { title: 'Documentation', icon: 'documentation' }
       }
     ]
   },

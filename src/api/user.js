@@ -34,14 +34,6 @@ export function getInfo(token) {
       })
     })
   })
-
-  // const db = firebase.firestore()
-
-  // return request({
-  //   url: '/vue-element-admin/user/info',
-  //   method: 'get',
-  //   params: { token }
-  // })
 }
 
 export function logout() {
