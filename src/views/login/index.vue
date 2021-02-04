@@ -1,6 +1,9 @@
 <template>
   <div class="login-container">
     <el-form class="login-form">
+      <div class="title-container">
+        <h3 class="title">Crypto Manager</h3>
+      </div>
       <div>
         <el-button :loading="loading" type="primary" style="width:100%;" @click.native.prevent="handleLogin">Login</el-button>
       </div>
@@ -90,6 +93,17 @@ $light_gray:#eee;
     padding: 160px 35px 0;
     margin: 0 auto;
     overflow: hidden;
+  }
+
+  .title-container {
+    position: relative;
+    .title {
+      font-size: 26px;
+      color: $light_gray;
+      margin: 0px auto 40px auto;
+      text-align: center;
+      font-weight: bold;
+    }
   }
 }
 </style>
