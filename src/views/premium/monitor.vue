@@ -46,6 +46,7 @@
         <div>
           <el-table
             :data="bybitData"
+            stripe
             style="width: 100%"
             size="small"
             :row-class-name="tableRowClassName"
@@ -90,6 +91,7 @@
         <div>
           <el-table
             :data="upbitData"
+            stripe
             style="width: 100%"
             size="small"
             :row-class-name="tableRowClassName"
@@ -134,6 +136,7 @@
         <div>
           <el-table
             :data="bithumbData"
+            stripe
             style="width: 100%"
             size="small"
             :row-class-name="tableRowClassName"
