@@ -169,11 +169,91 @@
         </div>
       </el-card>
     </el-row>
+
+    <el-row style="margin-top:5px;">
+      <el-card class="box-card">
+        <div class="clearfix">
+          <strong>알람</strong>
+        </div>
+        <div>
+          <el-table
+            :data="alarmData"
+            size="small"
+            style="width: 100%"
+          >
+            <el-table-column
+              prop="coin"
+              label="코인"
+              min-width="60px"
+            />
+            <el-table-column
+              prop="Use"
+              label="사용여부"
+              min-width="60px"
+              :formatter="boolToStr"
+            />
+            <el-table-column
+              prop="AlarmMin"
+              label="최소P"
+              min-width="60px"
+            />
+            <el-table-column
+              prop="AlarmMax"
+              label="최대P"
+              min-width="60px"
+            />
+            <el-table-column
+              label=""
+              min-width="60px"
+            >
+              <template slot-scope="scope">
+                <el-button
+                  type="text"
+                  size="mini"
+                  @click="alarmEdit(scope.$index, scope.row)"
+                >Edit</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+      </el-card>
+    </el-row>
+    <el-dialog title="Alarm Edit" :visible.sync="alarmFormVisible" width="60%">
+      <el-form :model="alarmForm">
+        <el-form-item label="사용">
+          <el-radio-group v-model="alarmForm.Use">
+            <el-radio :label="true">Y</el-radio>
+            <el-radio :label="false">N</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="최소P">
+          <el-input-number
+            v-model="alarmForm.AlarmMin"
+            size="mini"
+            :precision="1"
+            :step="0.1"
+          />
+        </el-form-item>
+        <el-form-item label="최대P">
+          <el-input-number
+            v-model="alarmForm.AlarmMax"
+            size="mini"
+            :precision="1"
+            :step="0.1"
+          />
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="alarmFormVisible = false">취소</el-button>
+        <el-button type="primary" @click="onAlarmSubmit">저장</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { getPrice } from '@/api/price'
+import { getPrice, updateAlarm } from '@/api/price'
+import { Message } from 'element-ui'
 
 export default {
   name: 'Premium',
@@ -184,11 +264,14 @@ export default {
       bybitData: [],
       upbitData: [],
       bithumbData: [],
+      alarmData: [],
       bybitPrice: {
         'BTC': 0,
         'ETH': 0,
         'XRP': 0
-      }
+      },
+      alarmFormVisible: false,
+      alarmForm: {}
     }
   },
   computed: {
@@ -223,14 +306,23 @@ export default {
             case 'BithumbPrice':
               this.setBithumbPrice(data[item])
               break
+            case 'Rule':
+              this.alarmData = []
+              this.alarmData.push({
+                ...data[item],
+                'coin': 'ALL'
+              })
           }
         }
         setTimeout(this.fetchData, 1000 * 1)
+      }).catch(err => {
+        console.error(err)
+        setTimeout(this.fetchData, 5000 * 1)
       })
     },
     tableRowClassName({ row }) {
       const timestamp = row.timestamp || row.Timestamp
-      return (timestamp + 10 < this.currTimestamp) ? 'warning-row' : ''
+      return (timestamp + 5 < this.currTimestamp) ? 'warning-row' : ''
     },
     toTimeStr(row) {
       const timestamp = row.timestamp || row.Timestamp
@@ -242,12 +334,32 @@ export default {
       if (price < 1) return price
       return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
     },
+    boolToStr(row) {
+      return (row.Use) ? 'Y' : 'N'
+    },
     timeStrToSec(timestr) {
       const sec = timestr.split(':').reduce((acc, time) => (60 * acc) + +time)
       return sec
     },
     getPremium(symbol, price, rate) {
       return parseFloat((price - this.bybitPrice[symbol] * rate) / price * 100).toFixed(3)
+    },
+    alarmEdit(index, row) {
+      this.alarmForm = this.alarmData[0]
+      this.alarmFormVisible = true
+    },
+    onAlarmSubmit() {
+      if (this.alarmForm.AlarmMin > this.alarmForm.AlarmMax) {
+        Message({
+          message: '최소값이 최대값보다 더 큽니다.',
+          type: 'error',
+          duration: 5 * 1000
+        })
+        return false
+      }
+      updateAlarm(this.alarmForm).then(response => {
+        this.alarmFormVisible = false
+      })
     },
     setCurrencyPrice(data) {
       const currency = data.Price.find(x => x.Symbol === 'USD_KRW')
@@ -312,6 +424,9 @@ export default {
         padding: 10px;
         min-width: 10px;
       }
+    }
+    .el-button {
+      padding: 5px 6px
     }
   }
 </style>

@@ -6,3 +6,11 @@ export function getPrice() {
     method: 'get'
   })
 }
+
+export function updateAlarm(data) {
+  return request({
+    url: `/rule`,
+    method: 'post',
+    data
+  })
+}
