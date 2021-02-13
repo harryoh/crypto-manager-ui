@@ -332,7 +332,7 @@ export default {
     tableRowClassName({ row }) {
       const timestamp = row.timestamp || row.Timestamp
       const now = parseInt((+new Date() / 1000))
-      return (timestamp + 1 < now) ? 'warning-row' : ''
+      return (timestamp + 5 < now) ? 'warning-row' : ''
     },
     toTimeStr(row) {
       const timestamp = row.timestamp || row.Timestamp
