@@ -78,6 +78,9 @@
               min-width="60px"
               :formatter="toTimeStr"
             />
+            <el-table-column width="8px">
+              <span class="dot" />
+            </el-table-column>
           </el-table>
         </div>
       </el-card>
@@ -123,6 +126,9 @@
               min-width="60px"
               :formatter="toTimeStr"
             />
+            <el-table-column width="8px">
+              <span class="dot" />
+            </el-table-column>
           </el-table>
         </div>
       </el-card>
@@ -168,6 +174,9 @@
               min-width="60px"
               :formatter="toTimeStr"
             />
+            <el-table-column width="8px">
+              <span class="dot" />
+            </el-table-column>
           </el-table>
         </div>
       </el-card>
@@ -281,9 +290,6 @@ export default {
     tz_kr() {
       return 9 * 60 * 60
     },
-    currTimestamp() {
-      return parseInt((+new Date() / 1000))
-    },
     currExchangeRate() {
       return this.currencyData[0].exchangeRate
     }
@@ -320,12 +326,13 @@ export default {
         setTimeout(this.fetchData, 1000)
       }).catch(err => {
         console.error(err)
-        setTimeout(this.fetchData, 1000)
+        setTimeout(this.fetchData, 3000)
       })
     },
     tableRowClassName({ row }) {
       const timestamp = row.timestamp || row.Timestamp
-      return (timestamp + 5 < this.currTimestamp) ? 'warning-row' : ''
+      const now = parseInt((+new Date() / 1000))
+      return (timestamp + 1 < now) ? 'warning-row' : ''
     },
     toTimeStr(row) {
       const timestamp = row.timestamp || row.Timestamp
@@ -411,8 +418,8 @@ export default {
 <style lang="scss">
   .premium-container {
     .el-table {
-      .warning-row {
-        background-color: LightPink;
+      .warning-row .dot {
+        background-color: red;
       }
       th,td {
         padding: 2px 0;
@@ -430,6 +437,13 @@ export default {
     }
     .el-button {
       padding: 5px 6px
+    }
+    .dot {
+      height: 5px;
+      width: 5px;
+      background-color: green;
+      border-radius: 50%;
+      display: inline-block;
     }
   }
 </style>
