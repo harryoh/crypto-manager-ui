@@ -320,6 +320,9 @@ export default {
         label: 'Upbit'
       }],
       coinList: [{
+        value: 'all',
+        label: 'All'
+      }, {
         value: 'BTC',
         label: 'BTC'
       }, {
