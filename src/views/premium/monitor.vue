@@ -194,25 +194,30 @@
             style="width: 100%"
           >
             <el-table-column
-              prop="coin"
+              prop="Exchange"
+              label="거래소"
+              min-width="60px"
+            />
+            <el-table-column
+              prop="Symbol"
               label="코인"
               min-width="60px"
             />
             <el-table-column
               prop="Use"
               label="사용여부"
-              min-width="60px"
+              min-width="50px"
               :formatter="boolToStr"
             />
             <el-table-column
               prop="AlarmMin"
               label="최소P"
-              min-width="60px"
+              min-width="40px"
             />
             <el-table-column
               prop="AlarmMax"
               label="최대P"
-              min-width="60px"
+              min-width="40px"
             />
             <el-table-column
               label=""
@@ -237,6 +242,26 @@
             <el-radio :label="true">Y</el-radio>
             <el-radio :label="false">N</el-radio>
           </el-radio-group>
+        </el-form-item>
+        <el-form-item>
+          <el-select v-model="alarmForm.Exchange" placeholder="거래소">
+            <el-option
+              v-for="item in exchangeList"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-select v-model="alarmForm.Symbol" placeholder="코인">
+            <el-option
+              v-for="item in coinList"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
         </el-form-item>
         <el-form-item label="최소P">
           <el-input-number
@@ -283,7 +308,24 @@ export default {
         'XRP': 0
       },
       alarmFormVisible: false,
-      alarmForm: {}
+      alarmForm: {},
+      exchangeList: [{
+        value: 'all',
+        label: 'All'
+      }, {
+        value: 'bithumb',
+        label: 'Bithumb'
+      }, {
+        value: 'upbit',
+        label: 'Upbit'
+      }],
+      coinList: [{
+        value: 'BTC',
+        label: 'BTC'
+      }, {
+        value: 'ETH',
+        label: 'ETH'
+      }]
     }
   },
   computed: {
@@ -315,12 +357,8 @@ export default {
             case 'BithumbPrice':
               this.setBithumbPrice(data[item])
               break
-            case 'Rule':
-              this.alarmData = []
-              this.alarmData.push({
-                ...data[item],
-                'coin': 'ALL'
-              })
+            case 'Rules':
+              this.alarmData = data[item]
           }
         }
         setTimeout(this.fetchData, 1000)
@@ -355,7 +393,8 @@ export default {
       return parseFloat((price - this.bybitPrice[symbol] * rate) / price * 100).toFixed(3)
     },
     alarmEdit(index, row) {
-      this.alarmForm = this.alarmData[0]
+      this.alarmForm = this.alarmData[index]
+      this.alarmForm.index = index
       this.alarmFormVisible = true
     },
     onAlarmSubmit() {
@@ -367,7 +406,8 @@ export default {
         })
         return false
       }
-      updateAlarm(this.alarmForm).then(response => {
+      this.alarmData[this.alarmForm.index] = this.alarmForm
+      updateAlarm(this.alarmData).then(response => {
         this.alarmFormVisible = false
       })
     },
@@ -401,14 +441,18 @@ export default {
       this.upbitData = []
       for (const coin of ['BTC', 'ETH', 'XRP']) {
         const info = data.Price.find(x => x.Symbol === coin)
-        this.upbitData.push(this.makeRow(info))
+        if (info) {
+          this.upbitData.push(this.makeRow(info))
+        }
       }
     },
     setBithumbPrice(data) {
       this.bithumbData = []
       for (const coin of ['BTC', 'ETH', 'XRP']) {
         const info = data.Price.find(x => x.Symbol === coin)
-        this.bithumbData.push(this.makeRow(info))
+        if (info) {
+          this.bithumbData.push(this.makeRow(info))
+        }
       }
     }
   }
