@@ -317,10 +317,10 @@ export default {
               })
           }
         }
-        setTimeout(this.fetchData, 1000 * 1)
+        setTimeout(this.fetchData, 1000)
       }).catch(err => {
         console.error(err)
-        setTimeout(this.fetchData, 5000 * 1)
+        setTimeout(this.fetchData, 1000)
       })
     },
     tableRowClassName({ row }) {
