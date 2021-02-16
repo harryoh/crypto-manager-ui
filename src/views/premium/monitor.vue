@@ -500,8 +500,5 @@ export default {
 <style lang="scss" scoped>
   .premium-container {
     padding: 6px 6px;
-    strong {
-      font-size: 13px;
-    }
   }
 </style>
