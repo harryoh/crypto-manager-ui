@@ -47,9 +47,8 @@ export default {
   methods: {
     handleLogin() {
       const provider = new firebase.auth.GoogleAuthProvider()
-      firebase.auth().signInWithPopup(provider).then(result => {
-        const token = result.credential?.accessToken
-        // const user = result.user
+      firebase.auth().signInWithPopup(provider).then(async result => {
+        const token = await firebase.auth().currentUser.getIdToken()
         this.loading = true
         this.$store.dispatch('user/googleLogin', token)
           .then(() => {
