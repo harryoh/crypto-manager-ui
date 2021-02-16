@@ -5,7 +5,7 @@
         <div>
           <el-table
             :data="currencyData"
-            size="small"
+            size="medium"
             style="width: 100%"
           >
             <el-table-column
@@ -24,14 +24,10 @@
               min-width="60px"
             />
             <el-table-column
-              label="직접입력"
-              min-width="60px"
-            />
-            <el-table-column
               prop="timestamp"
               label="시간"
-              min-width="60px"
-              :formatter="toTimeStr"
+              min-width="50px"
+              :formatter="toTimeStrSimple"
             />
           </el-table>
         </div>
@@ -48,7 +44,7 @@
             :data="bybitData"
             stripe
             style="width: 100%"
-            size="small"
+            size="medium"
             :row-class-name="tableRowClassName"
           >
             <el-table-column
@@ -75,8 +71,8 @@
             <el-table-column
               prop="Timestamp"
               label="시간"
-              min-width="60px"
-              :formatter="toTimeStr"
+              min-width="30px"
+              :formatter="toTimeStrSimple"
             />
             <el-table-column width="8px">
               <span class="dot" />
@@ -96,7 +92,7 @@
             :data="upbitData"
             stripe
             style="width: 100%"
-            size="small"
+            size="medium"
             :row-class-name="tableRowClassName"
           >
             <el-table-column
@@ -123,8 +119,8 @@
             <el-table-column
               prop="Timestamp"
               label="시간"
-              min-width="60px"
-              :formatter="toTimeStr"
+              min-width="30px"
+              :formatter="toTimeStrSimple"
             />
             <el-table-column width="8px">
               <span class="dot" />
@@ -144,7 +140,7 @@
             :data="bithumbData"
             stripe
             style="width: 100%"
-            size="small"
+            size="medium"
             :row-class-name="tableRowClassName"
           >
             <el-table-column
@@ -171,8 +167,8 @@
             <el-table-column
               prop="Timestamp"
               label="시간"
-              min-width="60px"
-              :formatter="toTimeStr"
+              min-width="30px"
+              :formatter="toTimeStrSimple"
             />
             <el-table-column width="8px">
               <span class="dot" />
@@ -190,7 +186,7 @@
         <div>
           <el-table
             :data="alarmData"
-            size="small"
+            size="medium"
             style="width: 100%"
           >
             <el-table-column
@@ -380,6 +376,11 @@ export default {
       const iso = new Date((Number(timestamp) + this.tz_kr) * 1000).toISOString()
       return iso.slice(-13, -5)
     },
+    toTimeStrSimple(row) {
+      const timestamp = row.timestamp || row.Timestamp
+      const iso = new Date((Number(timestamp) + this.tz_kr) * 1000).toISOString()
+      return iso.slice(-10, -5)
+    },
     numberWithCommas(row) {
       const price = row.Price
       if (price < 1) return price
@@ -472,8 +473,9 @@ export default {
         padding: 2px 0;
       }
       .cell {
-        padding-left: 3px;
-        padding-right: 3px;
+        padding-left: 1px;
+        padding-right: 1px;
+        font-size: 15px;
       }
     }
     .box-card {
@@ -497,7 +499,7 @@ export default {
 
 <style lang="scss" scoped>
   .premium-container {
-    padding: 10px 20px;
+    padding: 6px 6px;
     strong {
       font-size: 13px;
     }
