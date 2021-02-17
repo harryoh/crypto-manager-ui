@@ -292,6 +292,7 @@ export default {
   name: 'Premium',
   data() {
     return {
+      loop: true,
       fixExchangeRate: 1200,
       currencyData: [],
       bybitData: [],
@@ -338,6 +339,9 @@ export default {
   mounted() {
     this.fetchData()
   },
+  destroyed() {
+    this.loop = false
+  },
   methods: {
     fetchData() {
       getPrice().then(response => {
@@ -360,10 +364,10 @@ export default {
               this.alarmData = data[item]
           }
         }
-        setTimeout(this.fetchData, 1000)
+        this.loop && setTimeout(this.fetchData, 1000)
       }).catch(err => {
         console.error(err)
-        setTimeout(this.fetchData, 3000)
+        this.loop && setTimeout(this.fetchData, 3000)
       })
     },
     tableRowClassName({ row }) {

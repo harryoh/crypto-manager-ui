@@ -82,6 +82,20 @@ export const constantRoutes = [
         meta: { title: 'Preminum Monitor', icon: 'dashboard', affix: true }
       }
     ]
+  },
+  {
+    path: '/setting',
+    component: Layout,
+    redirect: '/setting/index',
+    hidden: true,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/setting/index'),
+        name: 'Setting',
+        meta: { title: 'Setting', icon: 'user', noCache: true }
+      }
+    ]
   }
   // {
   //   path: '/',
