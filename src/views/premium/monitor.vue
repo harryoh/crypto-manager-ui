@@ -52,15 +52,15 @@
               label="코인"
               min-width="30px"
             />
+            <el-table-column width="10px">
+              <span class="dot" />
+            </el-table-column>
             <el-table-column
               prop="Price"
               label="가격"
               min-width="60px"
               :formatter="numberWithCommas"
             />
-            <el-table-column width="12px">
-              <span class="dot" />
-            </el-table-column>
             <el-table-column
               prop="FundingRate"
               label="펀딩비용"
@@ -100,15 +100,15 @@
               label="코인"
               min-width="30px"
             />
+            <el-table-column width="10px">
+              <span class="dot" />
+            </el-table-column>
             <el-table-column
               prop="Price"
               label="가격"
               min-width="60px"
               :formatter="numberWithCommas"
             />
-            <el-table-column width="12px">
-              <span class="dot" />
-            </el-table-column>
             <el-table-column
               prop="FixPremium"
               label="고정P"
@@ -148,15 +148,15 @@
               label="코인"
               min-width="30px"
             />
+            <el-table-column width="10px">
+              <span class="dot" />
+            </el-table-column>
             <el-table-column
               prop="Price"
               label="가격"
               min-width="60px"
               :formatter="numberWithCommas"
             />
-            <el-table-column width="12px">
-              <span class="dot" />
-            </el-table-column>
             <el-table-column
               prop="FixPremium"
               label="고정P"
