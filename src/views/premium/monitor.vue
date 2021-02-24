@@ -371,29 +371,12 @@ export default {
               this.setCurrencyPrice(data[item])
               break
             case 'BybitPrice':
-              // this.bybitData = data[item].Price
               this.bybitPrice = {
                 'BTC': data[item].Price.find(x => x.Symbol === 'BTC') || 0,
                 'ETH': data[item].Price.find(x => x.Symbol === 'ETH') || 0,
                 'XRP': data[item].Price.find(x => x.Symbol === 'XRP') || 0
               }
               break
-            // case 'UpbitPrice':
-            //   this.upbitData = data[item].Price
-            //   this.upbitPrice = {
-            //     'BTC': data[item].Price.find(x => x.Symbol === 'BTC') || 0,
-            //     'ETH': data[item].Price.find(x => x.Symbol === 'ETH') || 0,
-            //     'XRP': data[item].Price.find(x => x.Symbol === 'XRP') || 0
-            //   }
-            //   break
-            // case 'BithumbPrice':
-            //   this.bithumbData = data[item].Price
-            //   this.bithumbPrice = {
-            //     'BTC': data[item].Price.find(x => x.Symbol === 'BTC') || 0,
-            //     'ETH': data[item].Price.find(x => x.Symbol === 'ETH') || 0,
-            //     'XRP': data[item].Price.find(x => x.Symbol === 'XRP') || 0
-            //   }
-            //   break
             case 'Rules':
               this.alarmData = data[item]
           }
@@ -547,7 +530,8 @@ export default {
 
       const info = res.content.list[res.content.list.length - 1]
       const symbol = info.symbol.substring(0, 3)
-      const time_ms = new Date(info.contDtm).getTime()
+      const timestr = info.contDtm.replace(/ /, 'T')
+      const time_ms = new Date(timestr).getTime()
 
       this.bithumbPrice[symbol] = {
         Symbol: symbol,
