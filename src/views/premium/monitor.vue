@@ -371,29 +371,29 @@ export default {
               this.setCurrencyPrice(data[item])
               break
             case 'BybitPrice':
-              this.bybitData = data[item].Price
+              // this.bybitData = data[item].Price
               this.bybitPrice = {
                 'BTC': data[item].Price.find(x => x.Symbol === 'BTC') || 0,
                 'ETH': data[item].Price.find(x => x.Symbol === 'ETH') || 0,
                 'XRP': data[item].Price.find(x => x.Symbol === 'XRP') || 0
               }
               break
-            case 'UpbitPrice':
-              this.upbitData = data[item].Price
-              this.upbitPrice = {
-                'BTC': data[item].Price.find(x => x.Symbol === 'BTC') || 0,
-                'ETH': data[item].Price.find(x => x.Symbol === 'ETH') || 0,
-                'XRP': data[item].Price.find(x => x.Symbol === 'XRP') || 0
-              }
-              break
-            case 'BithumbPrice':
-              this.bithumbData = data[item].Price
-              this.bithumbPrice = {
-                'BTC': data[item].Price.find(x => x.Symbol === 'BTC') || 0,
-                'ETH': data[item].Price.find(x => x.Symbol === 'ETH') || 0,
-                'XRP': data[item].Price.find(x => x.Symbol === 'XRP') || 0
-              }
-              break
+            // case 'UpbitPrice':
+            //   this.upbitData = data[item].Price
+            //   this.upbitPrice = {
+            //     'BTC': data[item].Price.find(x => x.Symbol === 'BTC') || 0,
+            //     'ETH': data[item].Price.find(x => x.Symbol === 'ETH') || 0,
+            //     'XRP': data[item].Price.find(x => x.Symbol === 'XRP') || 0
+            //   }
+            //   break
+            // case 'BithumbPrice':
+            //   this.bithumbData = data[item].Price
+            //   this.bithumbPrice = {
+            //     'BTC': data[item].Price.find(x => x.Symbol === 'BTC') || 0,
+            //     'ETH': data[item].Price.find(x => x.Symbol === 'ETH') || 0,
+            //     'XRP': data[item].Price.find(x => x.Symbol === 'XRP') || 0
+            //   }
+            //   break
             case 'Rules':
               this.alarmData = data[item]
           }
