@@ -415,17 +415,17 @@ export default {
     getBybitPrice() {
       const wsurl = 'wss://stream.bybit.com/realtime'
       const ws = new WebSocket(wsurl)
-      console.log(ws)
 
       ws.onopen = () => {
-        console.log(ws)
         ws.send('{"op": "subscribe", "args": ["trade.BTCUSD|ETHUSD|XRPUSD"]}')
       }
 
       ws.onmessage = this.setBybitPrice
 
-      ws.onerror = (err) =>
-        console.log(err)
+      ws.onerror = (err) => {
+        console.error(err)
+        this.checkWebsocket(ws)
+      }
 
       this.bybitws = ws
     },
@@ -434,13 +434,16 @@ export default {
       const ws = new WebSocket(wsurl)
 
       ws.binaryType = 'arraybuffer'
-      ws.onopen = () =>
+      ws.onopen = () => {
         ws.send('[{"ticket":"UNIQUE_TICKET"},{"type":"trade","codes":["KRW-BTC","KRW-ETH","KRW-XRP"]}]')
+      }
 
       ws.onmessage = this.setUpbitPrice
 
-      ws.onerror = (err) =>
-        console.log(err)
+      ws.onerror = (err) => {
+        console.error(err)
+        this.checkWebsocket(ws)
+      }
 
       this.upbitws = ws
     },
@@ -449,13 +452,16 @@ export default {
       const ws = new WebSocket(wsurl)
 
       ws.binaryType = 'arraybuffer'
-      ws.onopen = () =>
+      ws.onopen = () => {
         ws.send('{"type":"transaction", "symbols":["BTC_KRW","ETH_KRW","XRP_KRW"]}')
+      }
 
       ws.onmessage = this.setBithumbPrice
 
-      ws.onerror = (err) =>
-        console.log(err)
+      ws.onerror = (err) => {
+        console.error(err)
+        this.checkWebsocket(ws)
+      }
 
       this.bithumbws = ws
     },
