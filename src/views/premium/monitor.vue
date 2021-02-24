@@ -351,9 +351,6 @@ export default {
   },
   mounted() {
     this.fetchData()
-    this.getBybitPrice()
-    this.getUpbitPrice()
-    this.getBithumbPrice()
   },
   destroyed() {
     this.loop = false
@@ -381,18 +378,18 @@ export default {
               this.alarmData = data[item]
           }
         }
-        this.checkWebsocket(this.bybitws)
-        this.checkWebsocket(this.upbitws)
-        this.checkWebsocket(this.bithumbws)
+        this.checkWebsocket(this.bybitws, this.getBybitPrice)
+        this.checkWebsocket(this.upbitws, this.getUpbitPrice)
+        this.checkWebsocket(this.bithumbws, this.getBithumbPrice)
         this.loop && setTimeout(this.fetchData, 10000)
       }).catch(err => {
         console.error(err)
         this.loop && setTimeout(this.fetchData, 3000)
       })
     },
-    checkWebsocket(ws) {
+    checkWebsocket(ws, callback) {
       if (ws.readyState !== 1) {
-        ws = new WebSocket(ws.url)
+        return callback()
       }
     },
     getBybitPrice() {
@@ -407,7 +404,7 @@ export default {
 
       ws.onerror = (err) => {
         console.error(err)
-        this.checkWebsocket(ws)
+        setTimeout(this.getBybitPrice, 1000)
       }
 
       this.bybitws = ws
@@ -425,7 +422,7 @@ export default {
 
       ws.onerror = (err) => {
         console.error(err)
-        this.checkWebsocket(ws)
+        setTimeout(this.getUpbitPrice, 1000)
       }
 
       this.upbitws = ws
@@ -443,7 +440,7 @@ export default {
 
       ws.onerror = (err) => {
         console.error(err)
-        this.checkWebsocket(ws)
+        setTimeout(this.getBithumbPrice, 1000)
       }
 
       this.bithumbws = ws
