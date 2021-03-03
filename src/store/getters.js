@@ -12,6 +12,7 @@ const getters = {
   permission_routes: state => state.permission.routes,
   errorLogs: state => state.errorLog.logs,
   currencyRate: state => state.prices.currencyRate,
-  bybitPrice: state => state.prices.bybitPrice
+  bybitPrice: state => state.prices.bybitPrice,
+  upbitPrice: state => state.prices.upbitPrice
 }
 export default getters

@@ -9,51 +9,7 @@
     </el-row>
 
     <el-row style="margin-top:5px;">
-      <el-card class="box-card">
-        <div class="clearfix">
-          <strong>업비트</strong>
-        </div>
-        <div>
-          <el-table
-            :data="upbitData"
-            stripe
-            style="width: 100%"
-            size="medium"
-            :row-class-name="tableRowClassName"
-          >
-            <el-table-column
-              prop="Symbol"
-              label="코인"
-              min-width="30px"
-            />
-            <el-table-column width="10px">
-              <span class="dot" />
-            </el-table-column>
-            <el-table-column
-              prop="Price"
-              label="가격"
-              min-width="60px"
-              :formatter="numberWithCommas"
-            />
-            <el-table-column
-              prop="FixPremium"
-              label="고정P"
-              min-width="60px"
-            />
-            <el-table-column
-              prop="CurrPremium"
-              label="현재P"
-              min-width="60px"
-            />
-            <el-table-column
-              prop="Timestamp"
-              label="시간"
-              min-width="30px"
-              :formatter="toTimeStrSimple"
-            />
-          </el-table>
-        </div>
-      </el-card>
+      <upbit-price />
     </el-row>
 
     <el-row style="margin-top:5px;">
@@ -218,10 +174,11 @@ import { toTimeStrSimple } from '@/utils'
 
 import CurrencyRate from './components/CurrencyRate'
 import BybitPrice from './components/BybitPrice'
+import UpbitPrice from './components/UpbitPrice'
 
 export default {
   name: 'Premium',
-  components: { CurrencyRate, BybitPrice },
+  components: { CurrencyRate, BybitPrice, UpbitPrice },
   data() {
     return {
       loop: true,
@@ -307,7 +264,7 @@ export default {
               this.alarmData = prices[item]
           }
         }
-        this.checkWebsocket(this.upbitws, this.getUpbitPrice)
+        // this.checkWebsocket(this.upbitws, this.getUpbitPrice)
         this.checkWebsocket(this.bithumbws, this.getBithumbPrice)
         this.loop && setTimeout(this.fetchData, 10000)
       }).catch(err => {

@@ -373,7 +373,15 @@ export function numberWithCommas(row, ele, val) {
 }
 
 export function tableRowClassName({ row }) {
-  const timestamp = row.timestamp || row.Timestamp
-  const now = parseInt((+new Date() / 1000))
-  return (timestamp + 5 < now) ? 'warning-row' : ''
+  try {
+    const timestamp = row.timestamp || row.Timestamp
+    const now = parseInt((+new Date() / 1000))
+    return (timestamp + 5 < now) ? 'warning-row' : ''
+  } catch (e) {
+    return ''
+  }
+}
+
+export function getPremium(basic, price, rate) {
+  return parseFloat((price - basic * rate) / price * 100).toFixed(3)
 }
