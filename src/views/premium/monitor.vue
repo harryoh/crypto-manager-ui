@@ -1,37 +1,7 @@
 <template>
   <div class="premium-container">
     <el-row>
-      <el-card class="box-card">
-        <div>
-          <el-table
-            :data="currencyData"
-            size="medium"
-            style="width: 100%"
-          >
-            <el-table-column
-              prop="item"
-              label=""
-              min-width="60px"
-            />
-            <el-table-column
-              prop="fixExchangeRate"
-              label="고정환율"
-              min-width="60px"
-            />
-            <el-table-column
-              prop="exchangeRate"
-              label="현재환율"
-              min-width="60px"
-            />
-            <el-table-column
-              prop="timestamp"
-              label="시간"
-              min-width="50px"
-              :formatter="toTimeStrSimple"
-            />
-          </el-table>
-        </div>
-      </el-card>
+      <currency-rate />
     </el-row>
 
     <el-row style="margin-top:5px;">
@@ -285,16 +255,19 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import { getPrice, updateAlarm } from '@/api/price'
 import { Message } from 'element-ui'
+import CurrencyRate from './components/CurrencyRate'
+import { toTimeStrSimple } from '@/utils'
 
 export default {
   name: 'Premium',
+  components: { CurrencyRate },
   data() {
     return {
       loop: true,
-      fixExchangeRate: 1200,
-      currExchangeRate: 0,
+      prices: {},
       currencyData: [],
       bybitData: [],
       upbitData: [],
@@ -315,8 +288,6 @@ export default {
         'ETH': {},
         'XRP': {}
       },
-      fundingRate: 0,
-      PredictedFundingRate: 0,
       bybitws: false,
       upbitws: false,
       bithumbws: false,
@@ -345,9 +316,9 @@ export default {
     }
   },
   computed: {
-    tz_kr() {
-      return 9 * 60 * 60
-    }
+    ...mapGetters([
+      'currencyRate'
+    ])
   },
   mounted() {
     this.fetchData()
@@ -359,23 +330,27 @@ export default {
     this.bithumbws && this.bithumbws.close()
   },
   methods: {
+    toTimeStrSimple,
     fetchData() {
       getPrice().then(response => {
-        const data = response.data
-        for (const item in data) {
+        const prices = response.data
+        for (const item in prices) {
           switch (item) {
             case 'Currency':
-              this.setCurrencyPrice(data[item])
+              // eslint-disable-next-line no-case-declarations
+              const currency = prices[item].Price.find(x => x.Symbol === 'USD_KRW')
+              currency.exchangeRate = currency.Price
+              this.$store.dispatch('prices/setCurrency', currency)
               break
             case 'BybitPrice':
               this.bybitPrice = {
-                'BTC': data[item].Price.find(x => x.Symbol === 'BTC') || 0,
-                'ETH': data[item].Price.find(x => x.Symbol === 'ETH') || 0,
-                'XRP': data[item].Price.find(x => x.Symbol === 'XRP') || 0
+                'BTC': prices[item].Price.find(x => x.Symbol === 'BTC') || 0,
+                'ETH': prices[item].Price.find(x => x.Symbol === 'ETH') || 0,
+                'XRP': prices[item].Price.find(x => x.Symbol === 'XRP') || 0
               }
               break
             case 'Rules':
-              this.alarmData = data[item]
+              this.alarmData = prices[item]
           }
         }
         this.checkWebsocket(this.bybitws, this.getBybitPrice)
@@ -455,12 +430,6 @@ export default {
       const iso = new Date((Number(timestamp) + this.tz_kr) * 1000).toISOString()
       return iso.slice(-13, -5)
     },
-    toTimeStrSimple(row) {
-      const timestamp = row.timestamp || row.Timestamp
-      if (!timestamp) return
-      const iso = new Date((Number(timestamp) + this.tz_kr) * 1000).toISOString()
-      return iso.slice(-10, -5)
-    },
     numberWithCommas(row) {
       const price = row.Price
       if (!price || price < 1) return price || 0
@@ -497,16 +466,6 @@ export default {
         this.alarmFormVisible = false
       })
     },
-    setCurrencyPrice(data) {
-      const currency = data.Price.find(x => x.Symbol === 'USD_KRW')
-      this.currExchangeRate = parseFloat(Number(currency.Price).toFixed(3))
-      this.currencyData = [{
-        'item': currency.Symbol,
-        'fixExchangeRate': this.fixExchangeRate,
-        'exchangeRate': this.currExchangeRate,
-        'timestamp': currency.Timestamp
-      }]
-    },
     setBybitPrice(evt) {
       const res = JSON.parse(evt.data)
       if (!res.data) return
@@ -539,8 +498,8 @@ export default {
       this.bithumbData = Object.values(this.bithumbPrice).map(o => {
         return {
           ...o,
-          'FixPremium': this.getPremium(o.Symbol, o.Price, this.fixExchangeRate) + '%',
-          'CurrPremium': this.getPremium(o.Symbol, o.Price, this.currExchangeRate) + '%'
+          'FixPremium': this.getPremium(o.Symbol, o.Price, this.currencyRate.fixExchangeRate) + '%',
+          'CurrPremium': this.getPremium(o.Symbol, o.Price, this.currencyRate.exchangeRate) + '%'
         }
       })
     },
@@ -558,8 +517,8 @@ export default {
       this.upbitData = Object.values(this.upbitPrice).map(o => {
         return {
           ...o,
-          'FixPremium': this.getPremium(o.Symbol, o.Price, this.fixExchangeRate) + '%',
-          'CurrPremium': this.getPremium(o.Symbol, o.Price, this.currExchangeRate) + '%'
+          'FixPremium': this.getPremium(o.Symbol, o.Price, this.currencyRate.fixExchangeRate) + '%',
+          'CurrPremium': this.getPremium(o.Symbol, o.Price, this.currencyRate.exchangeRate) + '%'
         }
       })
     }

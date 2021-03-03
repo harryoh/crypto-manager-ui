@@ -355,3 +355,14 @@ export function removeClass(ele, cls) {
     ele.className = ele.className.replace(reg, ' ')
   }
 }
+
+export function toTimeStrSimple(row, ele, val) {
+  if (!val) return
+  const iso = new Date((Number(val) + (9 * 60 * 60)) * 1000).toISOString()
+  return iso.slice(-10, -5)
+}
+
+export function simpleFloat(row, ele, val) {
+  if (!val) return
+  return parseFloat(Number(val).toFixed(3))
+}
