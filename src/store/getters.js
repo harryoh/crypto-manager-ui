@@ -13,6 +13,7 @@ const getters = {
   errorLogs: state => state.errorLog.logs,
   currencyRate: state => state.prices.currencyRate,
   bybitPrice: state => state.prices.bybitPrice,
-  upbitPrice: state => state.prices.upbitPrice
+  upbitPrice: state => state.prices.upbitPrice,
+  bithumbPrice: state => state.prices.bithumbPrice
 }
 export default getters

@@ -2,11 +2,11 @@
   <el-row style="margin-top:5px;">
     <el-card class="box-card">
       <div class="clearfix">
-        <strong>업비트</strong>
+        <strong>빗썸</strong>
       </div>
       <div>
         <el-table
-          :data="upbitData"
+          :data="bithumbData"
           stripe
           style="width: 100%"
           size="medium"
@@ -56,7 +56,7 @@ import { toTimeStrSimple, tableRowClassName, numberWithCommas, getPremium } from
 export default {
   data() {
     return {
-      upbitData: [],
+      bithumbData: [],
       ws: null
     }
   },
@@ -64,7 +64,7 @@ export default {
     ...mapGetters([
       'currencyRate',
       'bybitPrice',
-      'upbitPrice'
+      'bithumbPrice'
     ])
   },
   mounted() {
@@ -79,12 +79,12 @@ export default {
     numberWithCommas,
     getPremium,
     getPrice() {
-      const wsurl = 'wss://api.upbit.com/websocket/v1'
+      const wsurl = 'wss://pubwss.bithumb.com/pub/ws'
       this.ws = new WebSocket(wsurl)
 
       this.ws.binaryType = 'arraybuffer'
       this.ws.onopen = () => {
-        this.ws.send('[{"ticket":"UNIQUE_TICKET"},{"type":"trade","codes":["KRW-BTC","KRW-ETH","KRW-XRP"]}]')
+        this.ws.send('{"type":"transaction", "symbols":["BTC_KRW","ETH_KRW","XRP_KRW"]}')
       }
 
       this.ws.onmessage = this.setPrice
@@ -95,22 +95,27 @@ export default {
       }
     },
     setPrice(evt) {
-      const enc = new TextDecoder('utf-8')
-      const arr = new Uint8Array(evt.data)
-      const info = JSON.parse(enc.decode(arr))
-      const symbol = info.code.substring(4, 8)
+      const res = JSON.parse(evt.data)
+      if (!res.content) return
+
+      const info = res.content.list[res.content.list.length - 1]
+      const symbol = info.symbol.substring(0, 3)
+      const timestr = info.contDtm.replace(/ /, 'T')
+      const time_ms = new Date(timestr).getTime()
 
       this.$store.dispatch('prices/setCoin', {
-        key: 'upbitPrice',
+        key: 'bithumbPrice',
         coin: symbol,
         value: {
           Symbol: symbol,
-          Price: info.trade_price,
-          Timestamp: parseInt(info.trade_timestamp / 1000)
+          Price: info.contPrice,
+          Timestamp: parseInt(time_ms / 1000)
         }
       })
+
       if (Object.keys(this.bybitPrice).length < 3) return
-      this.upbitData = Object.values(this.upbitPrice).map(o => {
+
+      this.bithumbData = Object.values(this.bithumbPrice).map(o => {
         const bybit = this.bybitPrice[o.Symbol]?.Price
         return {
           ...o,

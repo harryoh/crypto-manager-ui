@@ -1,49 +1,51 @@
 <template>
-  <el-card class="box-card">
-    <div class="clearfix">
-      <strong>바이빗</strong>
-    </div>
-    <div>
-      <el-table
-        :data="bybitData"
-        stripe
-        style="width: 100%"
-        size="medium"
-        :row-class-name="tableRowClassName"
-      >
-        <el-table-column
-          prop="Symbol"
-          label="코인"
-          min-width="30px"
-        />
-        <el-table-column width="10px">
-          <span class="dot" />
-        </el-table-column>
-        <el-table-column
-          prop="Price"
-          label="가격"
-          min-width="60px"
-          :formatter="numberWithCommas"
-        />
-        <el-table-column
-          prop="FundingRate"
-          label="펀딩비용"
-          min-width="60px"
-        />
-        <el-table-column
-          prop="PredictedFundingRate"
-          label="N펀딩비용"
-          min-width="60px"
-        />
-        <el-table-column
-          prop="Timestamp"
-          label="시간"
-          min-width="30px"
-          :formatter="toTimeStrSimple"
-        />
-      </el-table>
-    </div>
-  </el-card>
+  <el-row style="margin-top:5px;">
+    <el-card class="box-card">
+      <div class="clearfix">
+        <strong>바이빗</strong>
+      </div>
+      <div>
+        <el-table
+          :data="bybitData"
+          stripe
+          style="width: 100%"
+          size="medium"
+          :row-class-name="tableRowClassName"
+        >
+          <el-table-column
+            prop="Symbol"
+            label="코인"
+            min-width="30px"
+          />
+          <el-table-column width="10px">
+            <span class="dot" />
+          </el-table-column>
+          <el-table-column
+            prop="Price"
+            label="가격"
+            min-width="60px"
+            :formatter="numberWithCommas"
+          />
+          <el-table-column
+            prop="FundingRate"
+            label="펀딩비용"
+            min-width="60px"
+          />
+          <el-table-column
+            prop="PredictedFundingRate"
+            label="N펀딩비용"
+            min-width="60px"
+          />
+          <el-table-column
+            prop="Timestamp"
+            label="시간"
+            min-width="30px"
+            :formatter="toTimeStrSimple"
+          />
+        </el-table>
+      </div>
+    </el-card>
+  </el-row>
 </template>
 
 <script>
