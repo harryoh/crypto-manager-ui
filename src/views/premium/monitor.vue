@@ -5,51 +5,7 @@
     </el-row>
 
     <el-row style="margin-top:5px;">
-      <el-card class="box-card">
-        <div class="clearfix">
-          <strong>바이빗</strong>
-        </div>
-        <div>
-          <el-table
-            :data="bybitData"
-            stripe
-            style="width: 100%"
-            size="medium"
-            :row-class-name="tableRowClassName"
-          >
-            <el-table-column
-              prop="Symbol"
-              label="코인"
-              min-width="30px"
-            />
-            <el-table-column width="10px">
-              <span class="dot" />
-            </el-table-column>
-            <el-table-column
-              prop="Price"
-              label="가격"
-              min-width="60px"
-              :formatter="numberWithCommas"
-            />
-            <el-table-column
-              prop="FundingRate"
-              label="펀딩비용"
-              min-width="60px"
-            />
-            <el-table-column
-              prop="PredictedFundingRate"
-              label="N펀딩비용"
-              min-width="60px"
-            />
-            <el-table-column
-              prop="Timestamp"
-              label="시간"
-              min-width="30px"
-              :formatter="toTimeStrSimple"
-            />
-          </el-table>
-        </div>
-      </el-card>
+      <bybit-price />
     </el-row>
 
     <el-row style="margin-top:5px;">
@@ -258,26 +214,22 @@
 import { mapGetters } from 'vuex'
 import { getPrice, updateAlarm } from '@/api/price'
 import { Message } from 'element-ui'
-import CurrencyRate from './components/CurrencyRate'
 import { toTimeStrSimple } from '@/utils'
+
+import CurrencyRate from './components/CurrencyRate'
+import BybitPrice from './components/BybitPrice'
 
 export default {
   name: 'Premium',
-  components: { CurrencyRate },
+  components: { CurrencyRate, BybitPrice },
   data() {
     return {
       loop: true,
       prices: {},
       currencyData: [],
-      bybitData: [],
       upbitData: [],
       bithumbData: [],
       alarmData: [],
-      bybitPrice: {
-        'BTC': {},
-        'ETH': {},
-        'XRP': {}
-      },
       upbitPrice: {
         'BTC': {},
         'ETH': {},
@@ -288,7 +240,6 @@ export default {
         'ETH': {},
         'XRP': {}
       },
-      bybitws: false,
       upbitws: false,
       bithumbws: false,
       alarmFormVisible: false,
@@ -317,7 +268,8 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'currencyRate'
+      'currencyRate',
+      'bybitPrice'
     ])
   },
   mounted() {
@@ -325,7 +277,6 @@ export default {
   },
   destroyed() {
     this.loop = false
-    this.bybitws && this.bybitws.close()
     this.upbitws && this.upbitws.close()
     this.bithumbws && this.bithumbws.close()
   },
@@ -343,17 +294,19 @@ export default {
               this.$store.dispatch('prices/setCurrency', currency)
               break
             case 'BybitPrice':
-              this.bybitPrice = {
-                'BTC': prices[item].Price.find(x => x.Symbol === 'BTC') || 0,
-                'ETH': prices[item].Price.find(x => x.Symbol === 'ETH') || 0,
-                'XRP': prices[item].Price.find(x => x.Symbol === 'XRP') || 0
-              }
+              this.$store.dispatch('prices/setPrice', {
+                key: 'bybitPrice',
+                value: {
+                  'BTC': prices[item].Price.find(x => x.Symbol === 'BTC') || 0,
+                  'ETH': prices[item].Price.find(x => x.Symbol === 'ETH') || 0,
+                  'XRP': prices[item].Price.find(x => x.Symbol === 'XRP') || 0
+                }
+              })
               break
             case 'Rules':
               this.alarmData = prices[item]
           }
         }
-        this.checkWebsocket(this.bybitws, this.getBybitPrice)
         this.checkWebsocket(this.upbitws, this.getUpbitPrice)
         this.checkWebsocket(this.bithumbws, this.getBithumbPrice)
         this.loop && setTimeout(this.fetchData, 10000)
@@ -366,23 +319,6 @@ export default {
       if (ws.readyState !== 1) {
         return callback()
       }
-    },
-    getBybitPrice() {
-      const wsurl = 'wss://stream.bybit.com/realtime'
-      const ws = new WebSocket(wsurl)
-
-      ws.onopen = () => {
-        ws.send('{"op": "subscribe", "args": ["trade.BTCUSD|ETHUSD|XRPUSD"]}')
-      }
-
-      ws.onmessage = this.setBybitPrice
-
-      ws.onerror = (err) => {
-        console.error(err)
-        setTimeout(this.getBybitPrice, 1000)
-      }
-
-      this.bybitws = ws
     },
     getUpbitPrice() {
       const wsurl = 'wss://api.upbit.com/websocket/v1'
@@ -465,20 +401,6 @@ export default {
       updateAlarm(this.alarmData).then(response => {
         this.alarmFormVisible = false
       })
-    },
-    setBybitPrice(evt) {
-      const res = JSON.parse(evt.data)
-      if (!res.data) return
-      const info = res.data[res.data.length - 1]
-      const symbol = info.symbol.substring(0, 3)
-
-      this.bybitPrice[symbol] = {
-        ...this.bybitPrice[symbol],
-        Symbol: symbol,
-        Price: info.price,
-        Timestamp: parseInt(info.trade_time_ms / 1000)
-      }
-      this.bybitData = Object.values(this.bybitPrice)
     },
     setBithumbPrice(evt) {
       const res = JSON.parse(evt.data)

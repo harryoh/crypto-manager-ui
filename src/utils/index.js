@@ -366,3 +366,14 @@ export function simpleFloat(row, ele, val) {
   if (!val) return
   return parseFloat(Number(val).toFixed(3))
 }
+
+export function numberWithCommas(row, ele, val) {
+  if (!val || val < 1) return val || 0
+  return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+}
+
+export function tableRowClassName({ row }) {
+  const timestamp = row.timestamp || row.Timestamp
+  const now = parseInt((+new Date() / 1000))
+  return (timestamp + 5 < now) ? 'warning-row' : ''
+}

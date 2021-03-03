@@ -42,10 +42,7 @@ export default {
   computed: {
     ...mapGetters([
       'currencyRate'
-    ]),
-    doneCurrency() {
-      return this.$store.getters.currencyRate
-    }
+    ])
   },
   methods: {
     toTimeStrSimple,
