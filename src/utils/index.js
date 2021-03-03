@@ -355,3 +355,39 @@ export function removeClass(ele, cls) {
     ele.className = ele.className.replace(reg, ' ')
   }
 }
+
+export function toTimeStrSimple(row, ele, val) {
+  if (!val) return
+  const iso = new Date((Number(val) + (9 * 60 * 60)) * 1000).toISOString()
+  return iso.slice(-10, -5)
+}
+
+export function toTimeStr(row, ele, val) {
+  if (!val) return
+  const iso = new Date((Number(val) + (9 * 60 * 60)) * 1000).toISOString()
+  return iso.slice(5, 16).replace('T', ' ')
+}
+
+export function simpleFloat(row, ele, val) {
+  if (!val) return
+  return parseFloat(Number(val).toFixed(3))
+}
+
+export function numberWithCommas(row, ele, val) {
+  if (!val || val < 1) return val || 0
+  return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+}
+
+export function tableRowClassName({ row }) {
+  try {
+    const timestamp = row.timestamp || row.Timestamp
+    const now = parseInt((+new Date() / 1000))
+    return (timestamp + 5 < now) ? 'warning-row' : ''
+  } catch (e) {
+    return ''
+  }
+}
+
+export function getPremium(basic, price, rate) {
+  return parseFloat((price - basic * rate) / price * 100).toFixed(3)
+}

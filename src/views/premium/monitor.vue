@@ -1,182 +1,9 @@
 <template>
   <div class="premium-container">
-    <el-row>
-      <el-card class="box-card">
-        <div>
-          <el-table
-            :data="currencyData"
-            size="medium"
-            style="width: 100%"
-          >
-            <el-table-column
-              prop="item"
-              label=""
-              min-width="60px"
-            />
-            <el-table-column
-              prop="fixExchangeRate"
-              label="고정환율"
-              min-width="60px"
-            />
-            <el-table-column
-              prop="exchangeRate"
-              label="현재환율"
-              min-width="60px"
-            />
-            <el-table-column
-              prop="timestamp"
-              label="시간"
-              min-width="50px"
-              :formatter="toTimeStrSimple"
-            />
-          </el-table>
-        </div>
-      </el-card>
-    </el-row>
-
-    <el-row style="margin-top:5px;">
-      <el-card class="box-card">
-        <div class="clearfix">
-          <strong>바이빗</strong>
-        </div>
-        <div>
-          <el-table
-            :data="bybitData"
-            stripe
-            style="width: 100%"
-            size="medium"
-            :row-class-name="tableRowClassName"
-          >
-            <el-table-column
-              prop="Symbol"
-              label="코인"
-              min-width="30px"
-            />
-            <el-table-column width="10px">
-              <span class="dot" />
-            </el-table-column>
-            <el-table-column
-              prop="Price"
-              label="가격"
-              min-width="60px"
-              :formatter="numberWithCommas"
-            />
-            <el-table-column
-              prop="FundingRate"
-              label="펀딩비용"
-              min-width="60px"
-            />
-            <el-table-column
-              prop="PredictedFundingRate"
-              label="N펀딩비용"
-              min-width="60px"
-            />
-            <el-table-column
-              prop="Timestamp"
-              label="시간"
-              min-width="30px"
-              :formatter="toTimeStrSimple"
-            />
-          </el-table>
-        </div>
-      </el-card>
-    </el-row>
-
-    <el-row style="margin-top:5px;">
-      <el-card class="box-card">
-        <div class="clearfix">
-          <strong>업비트</strong>
-        </div>
-        <div>
-          <el-table
-            :data="upbitData"
-            stripe
-            style="width: 100%"
-            size="medium"
-            :row-class-name="tableRowClassName"
-          >
-            <el-table-column
-              prop="Symbol"
-              label="코인"
-              min-width="30px"
-            />
-            <el-table-column width="10px">
-              <span class="dot" />
-            </el-table-column>
-            <el-table-column
-              prop="Price"
-              label="가격"
-              min-width="60px"
-              :formatter="numberWithCommas"
-            />
-            <el-table-column
-              prop="FixPremium"
-              label="고정P"
-              min-width="60px"
-            />
-            <el-table-column
-              prop="CurrPremium"
-              label="현재P"
-              min-width="60px"
-            />
-            <el-table-column
-              prop="Timestamp"
-              label="시간"
-              min-width="30px"
-              :formatter="toTimeStrSimple"
-            />
-          </el-table>
-        </div>
-      </el-card>
-    </el-row>
-
-    <el-row style="margin-top:5px;">
-      <el-card class="box-card">
-        <div class="clearfix">
-          <strong>빗썸</strong>
-        </div>
-        <div>
-          <el-table
-            :data="bithumbData"
-            stripe
-            style="width: 100%"
-            size="medium"
-            :row-class-name="tableRowClassName"
-          >
-            <el-table-column
-              prop="Symbol"
-              label="코인"
-              min-width="30px"
-            />
-            <el-table-column width="10px">
-              <span class="dot" />
-            </el-table-column>
-            <el-table-column
-              prop="Price"
-              label="가격"
-              min-width="60px"
-              :formatter="numberWithCommas"
-            />
-            <el-table-column
-              prop="FixPremium"
-              label="고정P"
-              min-width="60px"
-            />
-            <el-table-column
-              prop="CurrPremium"
-              label="현재P"
-              min-width="60px"
-            />
-            <el-table-column
-              prop="Timestamp"
-              label="시간"
-              min-width="30px"
-              :formatter="toTimeStrSimple"
-            />
-          </el-table>
-        </div>
-      </el-card>
-    </el-row>
+    <currency-rate />
+    <bybit-price />
+    <upbit-price />
+    <bithumb-price />
 
     <el-row style="margin-top:5px;">
       <el-card class="box-card">
@@ -287,39 +114,20 @@
 <script>
 import { getPrice, updateAlarm } from '@/api/price'
 import { Message } from 'element-ui'
+import { toTimeStrSimple } from '@/utils'
+
+import CurrencyRate from './components/CurrencyRate'
+import BybitPrice from './components/BybitPrice'
+import UpbitPrice from './components/UpbitPrice'
+import BithumbPrice from './components/BithumbPrice'
 
 export default {
   name: 'Premium',
+  components: { CurrencyRate, BybitPrice, UpbitPrice, BithumbPrice },
   data() {
     return {
       loop: true,
-      fixExchangeRate: 1200,
-      currExchangeRate: 0,
-      currencyData: [],
-      bybitData: [],
-      upbitData: [],
-      bithumbData: [],
       alarmData: [],
-      bybitPrice: {
-        'BTC': {},
-        'ETH': {},
-        'XRP': {}
-      },
-      upbitPrice: {
-        'BTC': {},
-        'ETH': {},
-        'XRP': {}
-      },
-      bithumbPrice: {
-        'BTC': {},
-        'ETH': {},
-        'XRP': {}
-      },
-      fundingRate: 0,
-      PredictedFundingRate: 0,
-      bybitws: false,
-      upbitws: false,
-      bithumbws: false,
       alarmFormVisible: false,
       alarmForm: {},
       exchangeList: [{
@@ -344,127 +152,44 @@ export default {
       }]
     }
   },
-  computed: {
-    tz_kr() {
-      return 9 * 60 * 60
-    }
-  },
   mounted() {
     this.fetchData()
   },
   destroyed() {
     this.loop = false
-    this.bybitws && this.bybitws.close()
-    this.upbitws && this.upbitws.close()
-    this.bithumbws && this.bithumbws.close()
   },
   methods: {
+    toTimeStrSimple,
     fetchData() {
       getPrice().then(response => {
-        const data = response.data
-        for (const item in data) {
+        const prices = response.data
+        for (const item in prices) {
           switch (item) {
             case 'Currency':
-              this.setCurrencyPrice(data[item])
+              // eslint-disable-next-line no-case-declarations
+              const currency = prices[item].Price.find(x => x.Symbol === 'USD_KRW')
+              currency.exchangeRate = currency.Price
+              this.$store.dispatch('prices/setCurrency', currency)
               break
             case 'BybitPrice':
-              this.bybitPrice = {
-                'BTC': data[item].Price.find(x => x.Symbol === 'BTC') || 0,
-                'ETH': data[item].Price.find(x => x.Symbol === 'ETH') || 0,
-                'XRP': data[item].Price.find(x => x.Symbol === 'XRP') || 0
-              }
+              this.$store.dispatch('prices/setPrice', {
+                key: 'bybitPrice',
+                value: {
+                  'BTC': prices[item].Price.find(x => x.Symbol === 'BTC') || 0,
+                  'ETH': prices[item].Price.find(x => x.Symbol === 'ETH') || 0,
+                  'XRP': prices[item].Price.find(x => x.Symbol === 'XRP') || 0
+                }
+              })
               break
             case 'Rules':
-              this.alarmData = data[item]
+              this.alarmData = prices[item]
           }
         }
-        this.checkWebsocket(this.bybitws, this.getBybitPrice)
-        this.checkWebsocket(this.upbitws, this.getUpbitPrice)
-        this.checkWebsocket(this.bithumbws, this.getBithumbPrice)
         this.loop && setTimeout(this.fetchData, 10000)
       }).catch(err => {
         console.error(err)
         this.loop && setTimeout(this.fetchData, 3000)
       })
-    },
-    checkWebsocket(ws, callback) {
-      if (ws.readyState !== 1) {
-        return callback()
-      }
-    },
-    getBybitPrice() {
-      const wsurl = 'wss://stream.bybit.com/realtime'
-      const ws = new WebSocket(wsurl)
-
-      ws.onopen = () => {
-        ws.send('{"op": "subscribe", "args": ["trade.BTCUSD|ETHUSD|XRPUSD"]}')
-      }
-
-      ws.onmessage = this.setBybitPrice
-
-      ws.onerror = (err) => {
-        console.error(err)
-        setTimeout(this.getBybitPrice, 1000)
-      }
-
-      this.bybitws = ws
-    },
-    getUpbitPrice() {
-      const wsurl = 'wss://api.upbit.com/websocket/v1'
-      const ws = new WebSocket(wsurl)
-
-      ws.binaryType = 'arraybuffer'
-      ws.onopen = () => {
-        ws.send('[{"ticket":"UNIQUE_TICKET"},{"type":"trade","codes":["KRW-BTC","KRW-ETH","KRW-XRP"]}]')
-      }
-
-      ws.onmessage = this.setUpbitPrice
-
-      ws.onerror = (err) => {
-        console.error(err)
-        setTimeout(this.getUpbitPrice, 1000)
-      }
-
-      this.upbitws = ws
-    },
-    getBithumbPrice() {
-      const wsurl = 'wss://pubwss.bithumb.com/pub/ws'
-      const ws = new WebSocket(wsurl)
-
-      ws.binaryType = 'arraybuffer'
-      ws.onopen = () => {
-        ws.send('{"type":"transaction", "symbols":["BTC_KRW","ETH_KRW","XRP_KRW"]}')
-      }
-
-      ws.onmessage = this.setBithumbPrice
-
-      ws.onerror = (err) => {
-        console.error(err)
-        setTimeout(this.getBithumbPrice, 1000)
-      }
-
-      this.bithumbws = ws
-    },
-    tableRowClassName({ row }) {
-      const timestamp = row.timestamp || row.Timestamp
-      const now = parseInt((+new Date() / 1000))
-      return (timestamp + 5 < now) ? 'warning-row' : ''
-    },
-    toTimeStr(row) {
-      const timestamp = row.timestamp || row.Timestamp
-      const iso = new Date((Number(timestamp) + this.tz_kr) * 1000).toISOString()
-      return iso.slice(-13, -5)
-    },
-    toTimeStrSimple(row) {
-      const timestamp = row.timestamp || row.Timestamp
-      if (!timestamp) return
-      const iso = new Date((Number(timestamp) + this.tz_kr) * 1000).toISOString()
-      return iso.slice(-10, -5)
-    },
-    numberWithCommas(row) {
-      const price = row.Price
-      if (!price || price < 1) return price || 0
-      return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
     },
     boolToStr(row) {
       return (row.Use) ? 'Y' : 'N'
@@ -472,11 +197,6 @@ export default {
     timeStrToSec(timestr) {
       const sec = timestr.split(':').reduce((acc, time) => (60 * acc) + +time)
       return sec
-    },
-    getPremium(symbol, price, rate) {
-      const bybitPrice = this.bybitPrice[symbol]?.Price
-      if (!bybitPrice) return 0
-      return parseFloat((price - bybitPrice * rate) / price * 100).toFixed(3)
     },
     alarmEdit(index, row) {
       this.alarmForm = this.alarmData[index]
@@ -495,72 +215,6 @@ export default {
       this.alarmData[this.alarmForm.index] = this.alarmForm
       updateAlarm(this.alarmData).then(response => {
         this.alarmFormVisible = false
-      })
-    },
-    setCurrencyPrice(data) {
-      const currency = data.Price.find(x => x.Symbol === 'USD_KRW')
-      this.currExchangeRate = parseFloat(Number(currency.Price).toFixed(3))
-      this.currencyData = [{
-        'item': currency.Symbol,
-        'fixExchangeRate': this.fixExchangeRate,
-        'exchangeRate': this.currExchangeRate,
-        'timestamp': currency.Timestamp
-      }]
-    },
-    setBybitPrice(evt) {
-      const res = JSON.parse(evt.data)
-      if (!res.data) return
-      const info = res.data[res.data.length - 1]
-      const symbol = info.symbol.substring(0, 3)
-
-      this.bybitPrice[symbol] = {
-        ...this.bybitPrice[symbol],
-        Symbol: symbol,
-        Price: info.price,
-        Timestamp: parseInt(info.trade_time_ms / 1000)
-      }
-      this.bybitData = Object.values(this.bybitPrice)
-    },
-    setBithumbPrice(evt) {
-      const res = JSON.parse(evt.data)
-      if (!res.content) return
-
-      const info = res.content.list[res.content.list.length - 1]
-      const symbol = info.symbol.substring(0, 3)
-      const timestr = info.contDtm.replace(/ /, 'T')
-      const time_ms = new Date(timestr).getTime()
-
-      this.bithumbPrice[symbol] = {
-        Symbol: symbol,
-        Price: info.contPrice,
-        Timestamp: parseInt(time_ms / 1000)
-      }
-
-      this.bithumbData = Object.values(this.bithumbPrice).map(o => {
-        return {
-          ...o,
-          'FixPremium': this.getPremium(o.Symbol, o.Price, this.fixExchangeRate) + '%',
-          'CurrPremium': this.getPremium(o.Symbol, o.Price, this.currExchangeRate) + '%'
-        }
-      })
-    },
-    setUpbitPrice(evt) {
-      const enc = new TextDecoder('utf-8')
-      const arr = new Uint8Array(evt.data)
-      const info = JSON.parse(enc.decode(arr))
-      const symbol = info.code.substring(4, 8)
-      this.upbitPrice[symbol] = {
-        Symbol: symbol,
-        Price: info.trade_price,
-        Timestamp: parseInt(info.trade_timestamp / 1000)
-      }
-
-      this.upbitData = Object.values(this.upbitPrice).map(o => {
-        return {
-          ...o,
-          'FixPremium': this.getPremium(o.Symbol, o.Price, this.fixExchangeRate) + '%',
-          'CurrPremium': this.getPremium(o.Symbol, o.Price, this.currExchangeRate) + '%'
-        }
       })
     }
   }
