@@ -15,19 +15,19 @@
           <el-table-column
             prop="fixExchangeRate"
             label="고정환율"
-            min-width="60px"
+            min-width="50px"
           />
           <el-table-column
             prop="exchangeRate"
             label="현재환율"
-            min-width="60px"
+            min-width="50px"
             :formatter="simpleFloat"
           />
           <el-table-column
             prop="Timestamp"
             label="시간"
-            min-width="50px"
-            :formatter="toTimeStrSimple"
+            min-width="60px"
+            :formatter="toTimeStr"
           />
         </el-table>
       </div>
@@ -38,7 +38,7 @@
 <script>
 
 import { mapGetters } from 'vuex'
-import { toTimeStrSimple, simpleFloat } from '@/utils'
+import { toTimeStr, simpleFloat } from '@/utils'
 
 export default {
   computed: {
@@ -47,7 +47,7 @@ export default {
     ])
   },
   methods: {
-    toTimeStrSimple,
+    toTimeStr,
     simpleFloat
   }
 }

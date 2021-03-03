@@ -362,6 +362,12 @@ export function toTimeStrSimple(row, ele, val) {
   return iso.slice(-10, -5)
 }
 
+export function toTimeStr(row, ele, val) {
+  if (!val) return
+  const iso = new Date((Number(val) + (9 * 60 * 60)) * 1000).toISOString()
+  return iso.slice(5, 16).replace('T', ' ')
+}
+
 export function simpleFloat(row, ele, val) {
   if (!val) return
   return parseFloat(Number(val).toFixed(3))
