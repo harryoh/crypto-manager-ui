@@ -1,7 +1,7 @@
 <template>
   <div class="premium-container">
     <div style="display: flex; justify-content: flex-end">
-      현재시간: {{ toTimeStrFull(currTimestamp) }}
+      {{ toTimeStrFull(currTimestamp) }}
     </div>
 
     <currency-rate />
@@ -26,7 +26,8 @@ export default {
   data() {
     return {
       loop: true,
-      currTimestamp: parseInt(new Date().getTime() / 1000)
+      currTimestamp: parseInt(new Date().getTime() / 1000),
+      timeInterval: null
     }
   },
   created() {

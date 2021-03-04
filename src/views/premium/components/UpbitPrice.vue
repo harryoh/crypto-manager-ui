@@ -86,7 +86,7 @@ export default {
     heartbeat() {
       clearTimeout(this.socketTimeout)
       this.socketTimeout = setTimeout(() => {
-        console.log('Heartbeat Error')
+        // console.log('Upbit Heartbeat Error')
         this.isLive = false
         this.start()
       }, 30000)
@@ -132,11 +132,8 @@ export default {
       // eslint-disable-next-line no-prototype-builtins
       if (info.hasOwnProperty('status')) {
         if (info['status'] === 'UP') {
+          clearTimeout(this.socketTimeout)
           this.heartbeat()
-        } else {
-          console.error('Upbit Server Down!')
-          this.isLive = false
-          this.start()
         }
         return
       }

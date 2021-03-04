@@ -369,9 +369,10 @@ export function toTimeStr(row, ele, val) {
 }
 
 export function toSecAgo(row, ele, val) {
-  if (!val) return
-  const now = parseInt(new Date().getTime() / 1000)
-  return `${now - Number(val)} 초전`
+  if (!val) return ''
+  const now = parseInt(Math.ceil(new Date().getTime() / 1000))
+  const diff = now - Number(val)
+  return `${diff < 0 ? 0 : diff}초`
 }
 
 export function simpleFloat(row, ele, val) {

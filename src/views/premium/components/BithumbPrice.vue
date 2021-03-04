@@ -3,6 +3,7 @@
     <el-card class="box-card">
       <div class="clearfix">
         <strong>빗썸</strong>
+        <span v-if="!isLive" style="color:red"> Error</span>
       </div>
       <div>
         <el-table
@@ -59,7 +60,8 @@ export default {
   data() {
     return {
       bithumbData: [],
-      ws: null
+      ws: null,
+      isLive: false
     }
   },
   computed: {
@@ -69,26 +71,24 @@ export default {
       'bithumbPrice'
     ])
   },
-  mounted() {
-    this.getPrice()
-    this.checkConnection()
+  created() {
+    this.start()
   },
   destroyed() {
-    clearInterval(this.checkInterval)
-    this.ws && this.ws.close()
+    this.close()
   },
   methods: {
     tableRowClassName,
     numberWithCommas,
     getPremium,
     toSecAgo,
-    checkConnection() {
-      this.checkInterval = setInterval(() => {
-        if (!this.ws || this.ws.readyState !== 1) {
-          console.error('Bithumb websocket connection is failed! try to reconnection..')
-          this.getPrice()
-        }
-      }, 3000)
+    close() {
+      clearTimeout(this.socketTimeout)
+      this.ws && this.ws.close()
+    },
+    start() {
+      this.close()
+      this.getPrice()
     },
     getPrice() {
       const wsurl = 'wss://pubwss.bithumb.com/pub/ws'
@@ -97,19 +97,22 @@ export default {
       this.ws.binaryType = 'arraybuffer'
       this.ws.onopen = () => {
         this.ws.send('{"type":"transaction", "symbols":["BTC_KRW","ETH_KRW","XRP_KRW"]}')
+        this.isLive = true
       }
 
       this.ws.onmessage = this.setPrice
 
       this.ws.onerror = (err) => {
+        console.error('Bithumb Connection Error')
         console.error(err)
-        setTimeout(this.getPrice, 1000)
+        this.isLive = false
+        setTimeout(this.start, 5000)
       }
     },
     setPrice(evt) {
       const res = JSON.parse(evt.data)
-      if (!res.content) return
 
+      if (!res.content) return
       const info = res.content.list[res.content.list.length - 1]
       const symbol = info.symbol.substring(0, 3)
       const timestr = info.contDtm.replace(/ /, 'T')

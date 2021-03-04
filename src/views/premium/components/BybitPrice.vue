@@ -3,6 +3,7 @@
     <el-card class="box-card">
       <div class="clearfix">
         <strong>바이빗</strong>
+        <span v-if="!isLive" style="color:red"> Error</span>
       </div>
       <div>
         <el-table
@@ -59,7 +60,9 @@ export default {
   data() {
     return {
       bybitData: [],
-      ws: null
+      ws: null,
+      socketTimeout: null,
+      isLive: false
     }
   },
   computed: {
@@ -68,24 +71,31 @@ export default {
     ])
   },
   created() {
-    this.getPrice()
-    this.checkConnection()
+    this.start()
   },
   destroyed() {
-    clearInterval(this.checkInterval)
-    this.ws && this.ws.close()
+    this.close()
   },
   methods: {
     tableRowClassName,
     numberWithCommas,
     toSecAgo,
-    checkConnection() {
-      this.checkInterval = setInterval(() => {
-        if (!this.ws || this.ws.readyState !== 1) {
-          console.error('Bybit websocket connection is failed! try to reconnection..')
-          this.getPrice()
-        }
-      }, 3000)
+    heartbeat() {
+      clearTimeout(this.socketTimeout)
+      this.ws.send('{"op":"ping"}')
+      this.socketTimeout = setTimeout(() => {
+        // console.log('Bybit Heartbeat Error')
+        this.isLive = false
+        this.start()
+      }, 10000)
+    },
+    close() {
+      clearTimeout(this.socketTimeout)
+      this.ws && this.ws.close()
+    },
+    start() {
+      this.close()
+      this.getPrice()
     },
     getPrice() {
       const wsurl = 'wss://stream.bybit.com/realtime'
@@ -93,17 +103,30 @@ export default {
 
       this.ws.onopen = () => {
         this.ws.send('{"op": "subscribe", "args": ["trade.BTCUSD|ETHUSD|XRPUSD"]}')
+        this.heartbeat()
+        this.isLive = true
       }
 
       this.ws.onmessage = this.setPrice
 
       this.ws.onerror = (err) => {
+        console.error('Bybit Connection Error')
         console.error(err)
-        setTimeout(this.getPrice, 1000)
+        this.isLive = false
+        setTimeout(this.start, 5000)
       }
     },
     setPrice(evt) {
       const res = JSON.parse(evt.data)
+      // eslint-disable-next-line no-prototype-builtins
+      if (res.hasOwnProperty('ret_msg')) {
+        if (res['success'] === true && res['ret_msg'] === 'pong') {
+          clearTimeout(this.socketTimeout)
+          setTimeout(this.heartbeat, 30000)
+        }
+        return
+      }
+
       if (!res.data) return
       const info = res.data[res.data.length - 1]
       const symbol = info.symbol.substring(0, 3)
