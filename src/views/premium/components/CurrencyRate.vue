@@ -1,5 +1,5 @@
 <template>
-  <el-row style="margin-top:5px;">
+  <el-row>
     <el-card class="box-card">
       <div>
         <el-table

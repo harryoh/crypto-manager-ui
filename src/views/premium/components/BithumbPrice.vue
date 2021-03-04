@@ -61,7 +61,8 @@ export default {
     return {
       bithumbData: [],
       ws: null,
-      isLive: false
+      isLive: false,
+      timeInterval: null
     }
   },
   computed: {
@@ -73,6 +74,7 @@ export default {
   },
   created() {
     this.start()
+    this.checkConnection()
   },
   destroyed() {
     this.close()
@@ -82,6 +84,16 @@ export default {
     numberWithCommas,
     getPremium,
     toSecAgo,
+    checkConnection() {
+      this.timeInterval = setInterval(() => {
+        if (!this.ws) return
+        if (this.ws.readyState === 1) {
+          this.ws.send('{"type":"transaction", "symbols":["BTC_KRW","ETH_KRW","XRP_KRW"]}')
+        } else {
+          this.start()
+        }
+      }, 30000)
+    },
     close() {
       clearTimeout(this.socketTimeout)
       this.ws && this.ws.close()

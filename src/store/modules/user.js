@@ -6,7 +6,7 @@ import firebase from 'firebase'
 const state = {
   token: getToken(),
   name: '',
-  avatar: '',
+  avatar: 'https://i.pinimg.com/originals/97/21/05/972105c5a775f38cf33d3924aea053f1.jpg',
   introduction: '',
   roles: []
 }

@@ -370,7 +370,7 @@ export function toTimeStr(row, ele, val) {
 
 export function toSecAgo(row, ele, val) {
   if (!val) return ''
-  const now = parseInt(Math.ceil(new Date().getTime() / 1000))
+  const now = parseInt(Math.round(new Date().getTime() / 1000))
   const diff = now - Number(val)
   return `${diff < 0 ? 0 : diff}초`
 }

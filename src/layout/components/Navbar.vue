@@ -5,19 +5,7 @@
     <breadcrumb id="breadcrumb-container" class="breadcrumb-container" />
 
     <div class="right-menu">
-      <template v-if="device!=='mobile'">
-        <search id="header-search" class="right-menu-item" />
-
-        <error-log class="errLog-container right-menu-item hover-effect" />
-
-        <screenfull id="screenfull" class="right-menu-item hover-effect" />
-
-        <el-tooltip content="Global Size" effect="dark" placement="bottom">
-          <size-select id="size-select" class="right-menu-item hover-effect" />
-        </el-tooltip>
-
-      </template>
-
+      <date-time class="datetime" />
       <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
         <div class="avatar-wrapper">
           <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
@@ -30,13 +18,7 @@
           <router-link to="/setting/index">
             <el-dropdown-item>Setting</el-dropdown-item>
           </router-link>
-          <a target="_blank" href="https://github.com/PanJiaChen/vue-element-admin/">
-            <el-dropdown-item>Github</el-dropdown-item>
-          </a>
-          <a target="_blank" href="https://panjiachen.github.io/vue-element-admin-site/#/">
-            <el-dropdown-item>Docs</el-dropdown-item>
-          </a>
-          <el-dropdown-item divided @click.native="logout">
+          <el-dropdown-item v-if="token" divided @click.native="logout">
             <span style="display:block;">Log Out</span>
           </el-dropdown-item>
         </el-dropdown-menu>
@@ -49,25 +31,20 @@
 import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
-import ErrorLog from '@/components/ErrorLog'
-import Screenfull from '@/components/Screenfull'
-import SizeSelect from '@/components/SizeSelect'
-import Search from '@/components/HeaderSearch'
+import DateTime from '@/components/DateTime'
 
 export default {
   components: {
     Breadcrumb,
     Hamburger,
-    ErrorLog,
-    Screenfull,
-    SizeSelect,
-    Search
+    DateTime
   },
   computed: {
     ...mapGetters([
       'sidebar',
       'avatar',
-      'device'
+      'device',
+      'token'
     ])
   },
   methods: {
@@ -84,14 +61,14 @@ export default {
 
 <style lang="scss" scoped>
 .navbar {
-  height: 50px;
+  height: 40px;
   overflow: hidden;
   position: relative;
   background: #fff;
   box-shadow: 0 1px 4px rgba(0,21,41,.08);
 
   .hamburger-container {
-    line-height: 46px;
+    line-height: 40px;
     height: 100%;
     float: left;
     cursor: pointer;
@@ -107,36 +84,22 @@ export default {
     float: left;
   }
 
-  .errLog-container {
+  .datetime {
     display: inline-block;
-    vertical-align: top;
+    padding: 3px 20px 0 0;
+    height: 100%;
+    font-size: 13px;
+    color: #434446;
+    vertical-align: text-bottom;
   }
 
   .right-menu {
     float: right;
     height: 100%;
-    line-height: 50px;
+    line-height: 40px;
 
     &:focus {
       outline: none;
-    }
-
-    .right-menu-item {
-      display: inline-block;
-      padding: 0 8px;
-      height: 100%;
-      font-size: 18px;
-      color: #5a5e66;
-      vertical-align: text-bottom;
-
-      &.hover-effect {
-        cursor: pointer;
-        transition: background .3s;
-
-        &:hover {
-          background: rgba(0, 0, 0, .025)
-        }
-      }
     }
 
     .avatar-container {
@@ -148,8 +111,8 @@ export default {
 
         .user-avatar {
           cursor: pointer;
-          width: 40px;
-          height: 40px;
+          width: 30px;
+          height: 30px;
           border-radius: 10px;
         }
 
@@ -157,7 +120,7 @@ export default {
           cursor: pointer;
           position: absolute;
           right: -20px;
-          top: 25px;
+          top: 20px;
           font-size: 12px;
         }
       }

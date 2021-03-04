@@ -1,9 +1,5 @@
 <template>
   <div class="premium-container">
-    <div style="display: flex; justify-content: flex-end">
-      {{ toTimeStrFull(currTimestamp) }}
-    </div>
-
     <currency-rate />
     <bybit-price />
     <upbit-price />
@@ -25,20 +21,14 @@ export default {
   components: { CurrencyRate, BybitPrice, UpbitPrice, BithumbPrice, AlarmRule },
   data() {
     return {
-      loop: true,
-      currTimestamp: parseInt(new Date().getTime() / 1000),
-      timeInterval: null
+      loop: true
     }
   },
   created() {
     this.fetchData()
-    this.timeInterval = setInterval(() => {
-      this.currTimestamp = Math.round(new Date().getTime() / 1000)
-    }, 1000)
   },
   destroyed() {
     this.loop = false
-    clearInterval(this.timeInterval)
   },
   methods: {
     fetchData() {
