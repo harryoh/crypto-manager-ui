@@ -71,8 +71,10 @@ export default {
   },
   mounted() {
     this.getPrice()
+    this.checkConnection()
   },
   destroyed() {
+    clearInterval(this.checkInterval)
     this.ws && this.ws.close()
   },
   methods: {
@@ -80,6 +82,14 @@ export default {
     numberWithCommas,
     getPremium,
     toSecAgo,
+    checkConnection() {
+      this.checkInterval = setInterval(() => {
+        if (!this.ws || this.ws.readyState !== 1) {
+          console.error('Bithumb websocket connection is failed! try to reconnection..')
+          this.getPrice()
+        }
+      }, 3000)
+    },
     getPrice() {
       const wsurl = 'wss://pubwss.bithumb.com/pub/ws'
       this.ws = new WebSocket(wsurl)

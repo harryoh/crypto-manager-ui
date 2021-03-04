@@ -3,6 +3,7 @@
     <el-card class="box-card">
       <div class="clearfix">
         <strong>업비트</strong>
+        <span v-if="!isLive" style="color:red"> Error</span>
       </div>
       <div>
         <el-table
@@ -59,7 +60,9 @@ export default {
   data() {
     return {
       upbitData: [],
-      ws: null
+      ws: null,
+      socketTimeout: null,
+      isLive: false
     }
   },
   computed: {
@@ -69,37 +72,75 @@ export default {
       'upbitPrice'
     ])
   },
-  mounted() {
-    this.getPrice()
+  created() {
+    this.start()
   },
   destroyed() {
-    this.ws && this.ws.close()
+    this.close()
   },
   methods: {
     tableRowClassName,
     numberWithCommas,
     getPremium,
     toSecAgo,
+    heartbeat() {
+      clearTimeout(this.socketTimeout)
+      this.socketTimeout = setTimeout(() => {
+        console.log('Heartbeat Error')
+        this.isLive = false
+        this.start()
+      }, 30000)
+    },
+    close() {
+      clearTimeout(this.socketTimeout)
+      this.ws && this.ws.close()
+    },
+    start() {
+      this.close()
+      this.getPrice()
+    },
     getPrice() {
       const wsurl = 'wss://api.upbit.com/websocket/v1'
       this.ws = new WebSocket(wsurl)
 
       this.ws.binaryType = 'arraybuffer'
       this.ws.onopen = () => {
+        this.ws.send('PING')
         this.ws.send('[{"ticket":"UNIQUE_TICKET"},{"type":"trade","codes":["KRW-BTC","KRW-ETH","KRW-XRP"]}]')
+        this.isLive = true
       }
 
       this.ws.onmessage = this.setPrice
 
       this.ws.onerror = (err) => {
+        console.error('Upbit Connection Error')
         console.error(err)
-        setTimeout(this.getPrice, 1000)
+        this.isLive = false
+        setTimeout(this.start, 5000)
       }
     },
     setPrice(evt) {
       const enc = new TextDecoder('utf-8')
       const arr = new Uint8Array(evt.data)
-      const info = JSON.parse(enc.decode(arr))
+      // eslint-disable-next-line vue/no-parsing-error
+      const info = JSON.parse(enc.decode(arr).replace(/|/g, ''))
+      // eslint-disable-next-line no-prototype-builtins
+      if (info.hasOwnProperty('error')) {
+        console.error(info['error'])
+        return
+      }
+      // eslint-disable-next-line no-prototype-builtins
+      if (info.hasOwnProperty('status')) {
+        if (info['status'] === 'UP') {
+          this.heartbeat()
+        } else {
+          console.error('Upbit Server Down!')
+          this.isLive = false
+          this.start()
+        }
+        return
+      }
+
       const symbol = info.code.substring(4, 8)
 
       this.$store.dispatch('prices/setCoin', {

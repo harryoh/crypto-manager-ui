@@ -67,16 +67,26 @@ export default {
       'bybitPrice'
     ])
   },
-  mounted() {
+  created() {
     this.getPrice()
+    this.checkConnection()
   },
   destroyed() {
+    clearInterval(this.checkInterval)
     this.ws && this.ws.close()
   },
   methods: {
     tableRowClassName,
     numberWithCommas,
     toSecAgo,
+    checkConnection() {
+      this.checkInterval = setInterval(() => {
+        if (!this.ws || this.ws.readyState !== 1) {
+          console.error('Bybit websocket connection is failed! try to reconnection..')
+          this.getPrice()
+        }
+      }, 3000)
+    },
     getPrice() {
       const wsurl = 'wss://stream.bybit.com/realtime'
       this.ws = new WebSocket(wsurl)
