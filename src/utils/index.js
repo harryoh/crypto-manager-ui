@@ -368,6 +368,12 @@ export function toTimeStr(row, ele, val) {
   return iso.slice(5, 16).replace('T', ' ')
 }
 
+export function toSecAgo(row, ele, val) {
+  if (!val) return
+  const now = parseInt(new Date().getTime() / 1000)
+  return `${now - Number(val)} 초전`
+}
+
 export function simpleFloat(row, ele, val) {
   if (!val) return
   return parseFloat(Number(val).toFixed(3))

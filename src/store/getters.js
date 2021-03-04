@@ -14,6 +14,7 @@ const getters = {
   currencyRate: state => state.prices.currencyRate,
   bybitPrice: state => state.prices.bybitPrice,
   upbitPrice: state => state.prices.upbitPrice,
-  bithumbPrice: state => state.prices.bithumbPrice
+  bithumbPrice: state => state.prices.bithumbPrice,
+  alarmRules: state => state.alarmRule.alarmRules
 }
 export default getters

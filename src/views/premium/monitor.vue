@@ -1,165 +1,45 @@
 <template>
   <div class="premium-container">
+    <div style="display: flex; justify-content: flex-end">
+      현재시간: {{ toTimeStrFull(currTimestamp) }}
+    </div>
+
     <currency-rate />
     <bybit-price />
     <upbit-price />
     <bithumb-price />
-
-    <el-row style="margin-top:5px;">
-      <el-card class="box-card">
-        <div class="clearfix">
-          <strong>알람</strong>
-        </div>
-        <div>
-          <el-table
-            :data="alarmData"
-            size="medium"
-            style="width: 100%"
-          >
-            <el-table-column
-              prop="Exchange"
-              label="거래소"
-              min-width="60px"
-            />
-            <el-table-column
-              prop="Symbol"
-              label="코인"
-              min-width="60px"
-            />
-            <el-table-column
-              prop="Use"
-              label="사용여부"
-              min-width="60px"
-              :formatter="boolToStr"
-            />
-            <el-table-column
-              prop="AlarmMin"
-              label="최소P"
-              min-width="60px"
-            />
-            <el-table-column
-              prop="AlarmMax"
-              label="최대P"
-              min-width="60px"
-            />
-            <el-table-column
-              label=""
-              min-width="40px"
-            >
-              <template slot-scope="scope">
-                <el-button
-                  type="text"
-                  size="medium"
-                  @click="alarmEdit(scope.$index, scope.row)"
-                >수정</el-button>
-              </template>
-            </el-table-column>
-          </el-table>
-        </div>
-      </el-card>
-    </el-row>
-    <el-dialog title="Alarm Edit" :visible.sync="alarmFormVisible" width="60%">
-      <el-form :model="alarmForm">
-        <el-form-item label="사용">
-          <el-radio-group v-model="alarmForm.Use">
-            <el-radio :label="true">Y</el-radio>
-            <el-radio :label="false">N</el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item>
-          <el-select v-model="alarmForm.Exchange" placeholder="거래소">
-            <el-option
-              v-for="item in exchangeList"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item>
-          <el-select v-model="alarmForm.Symbol" placeholder="코인">
-            <el-option
-              v-for="item in coinList"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="최소P">
-          <el-input-number
-            v-model="alarmForm.AlarmMin"
-            size="mini"
-            :precision="1"
-            :step="0.1"
-          />
-        </el-form-item>
-        <el-form-item label="최대P">
-          <el-input-number
-            v-model="alarmForm.AlarmMax"
-            size="mini"
-            :precision="1"
-            :step="0.1"
-          />
-        </el-form-item>
-      </el-form>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="alarmFormVisible = false">취소</el-button>
-        <el-button type="primary" @click="onAlarmSubmit">저장</el-button>
-      </span>
-    </el-dialog>
+    <alarm-rule />
   </div>
 </template>
 
 <script>
-import { getPrice, updateAlarm } from '@/api/price'
-import { Message } from 'element-ui'
-import { toTimeStrSimple } from '@/utils'
-
+import { getPrice } from '@/api/price'
 import CurrencyRate from './components/CurrencyRate'
 import BybitPrice from './components/BybitPrice'
 import UpbitPrice from './components/UpbitPrice'
 import BithumbPrice from './components/BithumbPrice'
+import AlarmRule from './components/AlarmRule'
 
 export default {
   name: 'Premium',
-  components: { CurrencyRate, BybitPrice, UpbitPrice, BithumbPrice },
+  components: { CurrencyRate, BybitPrice, UpbitPrice, BithumbPrice, AlarmRule },
   data() {
     return {
       loop: true,
-      alarmData: [],
-      alarmFormVisible: false,
-      alarmForm: {},
-      exchangeList: [{
-        value: 'all',
-        label: 'All'
-      }, {
-        value: 'bithumb',
-        label: 'Bithumb'
-      }, {
-        value: 'upbit',
-        label: 'Upbit'
-      }],
-      coinList: [{
-        value: 'all',
-        label: 'All'
-      }, {
-        value: 'BTC',
-        label: 'BTC'
-      }, {
-        value: 'ETH',
-        label: 'ETH'
-      }]
+      currTimestamp: parseInt(new Date().getTime() / 1000)
     }
   },
-  mounted() {
+  created() {
     this.fetchData()
+    this.timeInterval = setInterval(() => {
+      this.currTimestamp = Math.round(new Date().getTime() / 1000)
+    }, 1000)
   },
   destroyed() {
     this.loop = false
+    clearInterval(this.timeInterval)
   },
   methods: {
-    toTimeStrSimple,
     fetchData() {
       getPrice().then(response => {
         const prices = response.data
@@ -182,7 +62,8 @@ export default {
               })
               break
             case 'Rules':
-              this.alarmData = prices[item]
+              this.$store.dispatch('alarmRule/setRules', prices[item])
+              break
           }
         }
         this.loop && setTimeout(this.fetchData, 10000)
@@ -191,31 +72,14 @@ export default {
         this.loop && setTimeout(this.fetchData, 3000)
       })
     },
-    boolToStr(row) {
-      return (row.Use) ? 'Y' : 'N'
+    toTimeStrFull(val) {
+      if (!val) return
+      const iso = new Date((Number(val) + (9 * 60 * 60)) * 1000).toISOString()
+      return iso.slice(0, 19).replace('T', ' ')
     },
     timeStrToSec(timestr) {
       const sec = timestr.split(':').reduce((acc, time) => (60 * acc) + +time)
       return sec
-    },
-    alarmEdit(index, row) {
-      this.alarmForm = this.alarmData[index]
-      this.alarmForm.index = index
-      this.alarmFormVisible = true
-    },
-    onAlarmSubmit() {
-      if (this.alarmForm.AlarmMin > this.alarmForm.AlarmMax) {
-        Message({
-          message: '최소값이 최대값보다 더 큽니다.',
-          type: 'error',
-          duration: 5 * 1000
-        })
-        return false
-      }
-      this.alarmData[this.alarmForm.index] = this.alarmForm
-      updateAlarm(this.alarmData).then(response => {
-        this.alarmFormVisible = false
-      })
     }
   }
 }

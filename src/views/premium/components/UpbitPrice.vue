@@ -17,9 +17,6 @@
             label="코인"
             min-width="30px"
           />
-          <el-table-column width="10px">
-            <span class="dot" />
-          </el-table-column>
           <el-table-column
             prop="Price"
             label="가격"
@@ -36,11 +33,14 @@
             label="현재P"
             min-width="60px"
           />
+          <el-table-column width="10px">
+            <span class="dot" />
+          </el-table-column>
           <el-table-column
             prop="Timestamp"
             label="시간"
             min-width="30px"
-            :formatter="toTimeStrSimple"
+            :formatter="toSecAgo"
           />
         </el-table>
       </div>
@@ -51,7 +51,9 @@
 <script>
 
 import { mapGetters } from 'vuex'
-import { toTimeStrSimple, tableRowClassName, numberWithCommas, getPremium } from '@/utils'
+import {
+  tableRowClassName, numberWithCommas, getPremium, toSecAgo
+} from '@/utils'
 
 export default {
   data() {
@@ -74,10 +76,10 @@ export default {
     this.ws && this.ws.close()
   },
   methods: {
-    toTimeStrSimple,
     tableRowClassName,
     numberWithCommas,
     getPremium,
+    toSecAgo,
     getPrice() {
       const wsurl = 'wss://api.upbit.com/websocket/v1'
       this.ws = new WebSocket(wsurl)
