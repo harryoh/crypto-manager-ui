@@ -1,5 +1,8 @@
 const state = {
-  currencyRate: {},
+  currencyRate: {
+    fixExchangeRate: 1200,
+    exchangeRate: 1200
+  },
   bybitPrice: {
     'BTC': 0,
     'ETH': 0,
@@ -21,7 +24,9 @@ const mutations = {
   SET_PRICE: (state, { key, value }) => {
     // eslint-disable-next-line no-prototype-builtins
     if (state.hasOwnProperty(key)) {
-      state[key] = value
+      if (value) {
+        state[key] = value
+      }
     }
   },
   SET_COIN: (state, { key, coin, value }) => {

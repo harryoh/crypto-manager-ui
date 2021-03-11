@@ -2,8 +2,8 @@
   <el-row style="margin-top:5px;">
     <el-card class="box-card">
       <div class="clearfix">
-        <strong>업비트</strong>
-        <span v-if="!isLive" style="color:red"> Error</span>
+        <span style="padding-right:3px;"><strong>업비트</strong></span>
+        <img v-if="!isLive" :src="warningImg" width="12">
       </div>
       <div>
         <el-table
@@ -52,6 +52,7 @@
 <script>
 
 import { mapGetters } from 'vuex'
+import warningImg from '@/assets/warning.png'
 import {
   tableRowClassName, numberWithCommas, getPremium, toSecAgo
 } from '@/utils'
@@ -59,6 +60,7 @@ import {
 export default {
   data() {
     return {
+      warningImg: warningImg,
       upbitData: [],
       ws: null,
       socketTimeout: null,

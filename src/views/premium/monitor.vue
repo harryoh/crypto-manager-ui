@@ -39,18 +39,22 @@ export default {
             case 'Currency':
               // eslint-disable-next-line no-case-declarations
               const currency = prices[item].Price.find(x => x.Symbol === 'USD_KRW')
-              currency.exchangeRate = currency.Price
-              this.$store.dispatch('prices/setCurrency', currency)
+              if (currency) {
+                currency.exchangeRate = currency.Price
+                this.$store.dispatch('prices/setCurrency', currency)
+              }
               break
             case 'BybitPrice':
-              this.$store.dispatch('prices/setPrice', {
-                key: 'bybitPrice',
-                value: {
-                  'BTC': prices[item].Price.find(x => x.Symbol === 'BTC') || 0,
-                  'ETH': prices[item].Price.find(x => x.Symbol === 'ETH') || 0,
-                  'XRP': prices[item].Price.find(x => x.Symbol === 'XRP') || 0
-                }
-              })
+              if (prices[item].Price.length) {
+                this.$store.dispatch('prices/setPrice', {
+                  key: 'bybitPrice',
+                  value: {
+                    'BTC': prices[item].Price.find(x => x.Symbol === 'BTC') || 0,
+                    'ETH': prices[item].Price.find(x => x.Symbol === 'ETH') || 0,
+                    'XRP': prices[item].Price.find(x => x.Symbol === 'XRP') || 0
+                  }
+                })
+              }
               break
             case 'Rules':
               this.$store.dispatch('alarmRule/setRules', prices[item])
@@ -60,7 +64,7 @@ export default {
         this.loop && setTimeout(this.fetchData, 10000)
       }).catch(err => {
         console.error(err)
-        this.loop && setTimeout(this.fetchData, 3000)
+        this.loop && setTimeout(this.fetchData, 10000)
       })
     },
     toTimeStrFull(val) {
