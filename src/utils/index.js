@@ -382,7 +382,13 @@ export function simpleFloat(row, ele, val) {
 
 export function numberWithCommas(row, ele, val) {
   if (!val || val < 1) return val || 0
-  return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+
+  const vals = val.toString().split('.')
+  let res = vals[0].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+  if (vals[1]) {
+    res += `.${vals[1]}`
+  }
+  return res
 }
 
 export function tableRowClassName({ row }) {

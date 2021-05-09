@@ -90,7 +90,9 @@ export default {
       this.timeInterval = setInterval(() => {
         if (!this.ws) return
         if (this.ws.readyState === 1) {
-          this.ws.send('{"type":"transaction", "symbols":["BTC_KRW","ETH_KRW","XRP_KRW"]}')
+          this.ws.send(
+            '{"type":"transaction", "symbols":["BTC_KRW","ETH_KRW","XRP_KRW","EOS_KRW"]}'
+          )
         } else {
           this.start()
         }
@@ -110,7 +112,9 @@ export default {
 
       this.ws.binaryType = 'arraybuffer'
       this.ws.onopen = () => {
-        this.ws.send('{"type":"transaction", "symbols":["BTC_KRW","ETH_KRW","XRP_KRW"]}')
+        this.ws.send(
+          '{"type":"transaction", "symbols":["BTC_KRW","ETH_KRW","XRP_KRW","EOS_KRW"]}'
+        )
         this.isLive = true
       }
 

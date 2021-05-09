@@ -108,7 +108,9 @@ export default {
       this.ws.binaryType = 'arraybuffer'
       this.ws.onopen = () => {
         this.ws.send('PING')
-        this.ws.send('[{"ticket":"UNIQUE_TICKET"},{"type":"trade","codes":["KRW-BTC","KRW-ETH","KRW-XRP"]}]')
+        this.ws.send(
+          '[{"ticket":"UNIQUE_TICKET"},{"type":"trade","codes":["KRW-BTC","KRW-ETH","KRW-XRP","KRW-EOS"]}]'
+        )
         this.isLive = true
       }
 
