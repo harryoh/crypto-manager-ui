@@ -51,8 +51,8 @@ export default {
                   value: {
                     'BTC': prices[item].Price.find(x => x.Symbol === 'BTC') || 0,
                     'ETH': prices[item].Price.find(x => x.Symbol === 'ETH') || 0,
-                    'XRP': prices[item].Price.find(x => x.Symbol === 'XRP') || 0,
-                    'EOS': prices[item].Price.find(x => x.Symbol === 'EOS') || 0
+                    'EOS': prices[item].Price.find(x => x.Symbol === 'EOS') || 0,
+                    'XRP': prices[item].Price.find(x => x.Symbol === 'XRP') || 0
                   }
                 })
               }

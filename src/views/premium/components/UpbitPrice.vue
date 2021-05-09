@@ -109,7 +109,7 @@ export default {
       this.ws.onopen = () => {
         this.ws.send('PING')
         this.ws.send(
-          '[{"ticket":"UNIQUE_TICKET"},{"type":"trade","codes":["KRW-BTC","KRW-ETH","KRW-XRP","KRW-EOS"]}]'
+          '[{"ticket":"UNIQUE_TICKET"},{"type":"trade","codes":["KRW-BTC","KRW-ETH","KRW-EOS","KRW-XRP"]}]'
         )
         this.isLive = true
       }

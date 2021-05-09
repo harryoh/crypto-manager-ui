@@ -104,7 +104,7 @@ export default {
       this.ws = new WebSocket(wsurl)
 
       this.ws.onopen = () => {
-        this.ws.send('{"op": "subscribe", "args": ["trade.BTCUSD|ETHUSD|XRPUSD|EOSUSD"]}')
+        this.ws.send('{"op": "subscribe", "args": ["trade.BTCUSD|ETHUSD|EOSUSD|XRPUSD"]}')
         this.heartbeat()
         this.isLive = true
       }

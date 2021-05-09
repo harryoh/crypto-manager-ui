@@ -6,20 +6,20 @@ const state = {
   bybitPrice: {
     'BTC': 0,
     'ETH': 0,
-    'XRP': 0,
-    'EOS': 0
+    'EOS': 0,
+    'XRP': 0
   },
   upbitPrice: {
     'BTC': 0,
     'ETH': 0,
-    'XRP': 0,
-    'EOS': 0
+    'EOS': 0,
+    'XRP': 0
   },
   bithumbPrice: {
     'BTC': 0,
     'ETH': 0,
-    'XRP': 0,
-    'EOS': 0
+    'EOS': 0,
+    'XRP': 0
   }
 }
 
