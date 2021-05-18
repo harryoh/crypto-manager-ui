@@ -134,6 +134,12 @@ export default {
       }, {
         value: 'ETH',
         label: 'ETH'
+      }, {
+        value: 'XRP',
+        label: 'XRP'
+      }, {
+        value: 'EOS',
+        label: 'EOS'
       }]
     }
   },
