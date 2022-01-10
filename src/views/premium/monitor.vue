@@ -38,7 +38,7 @@ export default {
           switch (item) {
             case 'Currency':
               // eslint-disable-next-line no-case-declarations
-              const currency = prices[item].Price.find(x => x.Symbol === 'USD_KRW')
+              const currency = prices[item].Price.find(x => x.Symbol === 'USD_KRW' || x.Symbol === 'USDKRW')
               if (currency) {
                 currency.exchangeRate = currency.Price
                 this.$store.dispatch('prices/setCurrency', currency)
